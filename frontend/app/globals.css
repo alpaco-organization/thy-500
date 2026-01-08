@@ -1,0 +1,178 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-Thin.woff2") format("woff2"),
+    url("/font/Fellix-Thin.woff") format("woff"),
+    url("/font/Fellix-Thin.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-Light.woff2") format("woff2"),
+    url("/font/Fellix-Light.woff") format("woff"),
+    url("/font/Fellix-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-Regular.woff2") format("woff2"),
+    url("/font/Fellix-Regular.woff") format("woff"),
+    url("/font/Fellix-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-Medium.woff2") format("woff2"),
+    url("/font/Fellix-Medium.woff") format("woff"),
+    url("/font/Fellix-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-SemiBold.woff2") format("woff2"),
+    url("/font/Fellix-SemiBold.woff") format("woff"),
+    url("/font/Fellix-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-Bold.woff2") format("woff2"),
+    url("/font/Fellix-Bold.woff") format("woff"),
+    url("/font/Fellix-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-ExtraBold.woff2") format("woff2"),
+    url("/font/Fellix-ExtraBold.woff") format("woff"),
+    url("/font/Fellix-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Fellix";
+  src: url("/font/Fellix-Black.woff2") format("woff2"),
+    url("/font/Fellix-Black.woff") format("woff"),
+    url("/font/Fellix-Black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@custom-variant hover (&:hover);
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: "Fellix", sans-serif;
+
+  --animate-slide-right: slide-right 2s ease-in-out infinite;
+  
+  @keyframes slide-right {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+}
+
+:root {
+  --foreground: #232b38;
+  --background: #181c23;
+
+  --card: #ffffff;
+  --card-foreground: #232b38;
+
+  --popover: #ffffff;
+  --popover-foreground: #232b38;
+
+  --primary: #c90019;
+  --primary-foreground: #ffffff;
+
+  --secondary: #dadfe6;
+  --secondary-foreground: #232b38;
+
+  --muted: #dadfe6;
+  --muted-foreground: #526484;
+
+  --accent: #dadfe6;
+  --accent-foreground: #181c23;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #fafafa;
+
+  --border: #dadfe6;
+  --input: #dadfe6;
+  --ring: #0a0a0a;
+
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply outline-ring/50 font-sans;
+  }
+
+  html {
+    @apply scroll-smooth text-[20px];
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
