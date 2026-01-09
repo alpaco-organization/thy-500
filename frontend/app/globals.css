@@ -110,25 +110,6 @@
   --radius-xl: calc(var(--radius) + 4px);
 
   --font-sans: "Fellix", sans-serif;
-
-  --animate-slide-right: slide-right 2s ease-in-out infinite;
-  
-  @keyframes slide-right {
-    0% {
-      transform: translateX(-100%);
-      opacity: 0;
-    }
-    20% {
-      opacity: 1;
-    }
-    80% {
-      opacity: 1;
-    }
-    100% {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-  }
 }
 
 :root {
