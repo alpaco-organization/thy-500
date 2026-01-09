@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useLanguage } from "@/contexts/language-context";
 import { Hand } from "lucide-react";
 
 interface WelcomeProps {
@@ -15,6 +16,7 @@ export function Welcome({
   isUserInteracting,
   onInteraction,
 }: WelcomeProps) {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const lastInteractionTimeRef = useRef<number>(Date.now());
@@ -86,7 +88,7 @@ export function Welcome({
 
   return (
     <div
-      className="fixed inset-0 z-50 pointer-events-none flex flex-col items-center justify-center backdrop-blur-md bg-background/80 transition-opacity duration-500 data-[state=show]:animate-in fade-in data-[state=hide]:animate-out fade-out fill-mode-forwards"
+      className="fixed inset-0 z-100 pointer-events-none flex flex-col items-center justify-center backdrop-blur-md bg-background/80 transition-opacity duration-500 data-[state=show]:animate-in fade-in data-[state=hide]:animate-out fade-out fill-mode-forwards"
       onClick={onInteraction}
       onTouchStart={onInteraction}
       data-state={isVisible ? "show" : "hide"}
@@ -102,13 +104,12 @@ export function Welcome({
         />
 
         <h1 className="text-3xl md:text-4xl max-w-lg font-semibold text-white text-center">
-          Türk Hava Yolları’nın 500. Uçağı TK Aile’de Sen de Varsın!
+          {t("welcome.title")}
         </h1>
 
         <div className="flex flex-col gap-6 items-center">
           <p className="text-lg md:text-xl text-white/90 text-center max-w-lg">
-            Türk Hava Yolları’nın 500. uçağı üzerinde yer alan binlerce fotoğraf
-            arasından kendi fotoğrafını keşfet.
+            {t("welcome.description")}
           </p>
 
           <div className="flex flex-col items-center">

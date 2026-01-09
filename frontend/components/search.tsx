@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Search as SearchIcon, Loader2, User, IdCard, RotateCcw } from "lucide-react";
 import { Item, ItemActions, ItemContent } from "@/components/ui/item";
 import { useNavigation } from "@/contexts/navigation-context";
+import { useLanguage } from "@/contexts/language-context";
 import clsx from "clsx";
 
 type SearchType = "identity" | "fullName";
@@ -22,6 +23,7 @@ export function Search({
   isSearchComplete = false,
 }: SearchProps) {
   const { isNavigating } = useNavigation();
+  const { t } = useLanguage();
 
   const [searchType, setSearchType] = useState<SearchType>("fullName");
   const [query, setQuery] = useState<string>("");
@@ -65,7 +67,7 @@ export function Search({
           })}
         >
           <User className="size-4" />
-          Ad Soyad
+          {t("search.fullName")}
         </Button>
         <Button
           type="button"
@@ -77,7 +79,7 @@ export function Search({
           })}
         >
           <IdCard className="size-5" />
-          Sicil Numarası
+          {t("search.identityNumber")}
         </Button>
       </div>
 
@@ -87,8 +89,8 @@ export function Search({
             type={searchType === "identity" ? "number" : "text"}
             placeholder={
               searchType === "identity"
-                ? "Sicil Numarası Giriniz"
-                : "Ad Soyad Giriniz"
+                ? t("search.identityNumberPlaceholder")
+                : t("search.fullNamePlaceholder")
             }
             value={query}
             onChange={(e) => setQuery(e.target.value)}
