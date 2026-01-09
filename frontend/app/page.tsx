@@ -42,7 +42,7 @@ function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
 }
 
 function Model({ onLoad }: { onLoad?: () => void }) {
-  const { scene } = useGLTF("/modal.glb");
+  const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
     onLoad?.();
