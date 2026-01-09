@@ -3,32 +3,52 @@
 import Image from "next/image";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useLanguage } from "@/contexts/language-context";
-import { Hand } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useNavigation } from "@/contexts/navigation-context";
+import { clsx } from "clsx";
+import Link from "next/link";
+
+const STORAGE_KEY = "welcome_approved";
+const INACTIVITY_TIMEOUT = 30000;
+const appMode = process.env.NEXT_PUBLIC_APP_MODE || "default";
 
 interface WelcomeProps {
-  isModelLoaded: boolean;
-  isUserInteracting: boolean;
-  onInteraction: () => void;
+  onTimeout: () => void;
 }
 
-export function Welcome({
-  isModelLoaded,
-  isUserInteracting,
-  onInteraction,
-}: WelcomeProps) {
+export function Welcome({ onTimeout }: WelcomeProps) {
   const { t } = useLanguage();
-  const [isVisible, setIsVisible] = useState(false);
+  const { isNavigating } = useNavigation();
+
+  const [isVisible, setIsVisible] = useState<boolean>(
+    appMode === "default" && localStorage.getItem(STORAGE_KEY) === "true"
+      ? false
+      : true
+  );
+  const [isApproved, setIsApproved] = useState<boolean>(false);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const lastInteractionTimeRef = useRef<number>(Date.now());
 
   useEffect(() => {
-    if (isModelLoaded) {
-      setIsVisible(true);
-      lastInteractionTimeRef.current = Date.now();
+    if (appMode === "default") {
+      const approved = localStorage.getItem(STORAGE_KEY);
+
+      if (approved === "true") {
+        setIsVisible(false);
+        return;
+      }
     }
-  }, [isModelLoaded]);
+
+    setIsVisible(true);
+    lastInteractionTimeRef.current = Date.now();
+  }, [appMode]);
 
   const startInactivityTimer = useCallback(() => {
+    if (appMode !== "kiosk") return;
+
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
     }
@@ -37,24 +57,27 @@ export function Welcome({
       const now = Date.now();
       const timeSinceLastInteraction = now - lastInteractionTimeRef.current;
 
-      if (timeSinceLastInteraction >= 30000) {
+      if (timeSinceLastInteraction >= INACTIVITY_TIMEOUT) {
         setIsVisible(true);
+        setIsApproved(false);
+        onTimeout();
       }
-    }, 30000);
-  }, []);
+    }, INACTIVITY_TIMEOUT);
+  }, [appMode]);
 
   useEffect(() => {
-    if (!isModelLoaded) return;
-
-    if (isUserInteracting) {
-      setIsVisible(false);
+    if (isNavigating) {
+      if (appMode !== "kiosk") {
+        setIsVisible(false);
+      }
       lastInteractionTimeRef.current = Date.now();
 
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current);
         inactivityTimerRef.current = null;
       }
-    } else if (!isVisible) {
+    } else if (!isVisible && appMode === "kiosk") {
+      lastInteractionTimeRef.current = Date.now();
       startInactivityTimer();
     }
 
@@ -63,37 +86,27 @@ export function Welcome({
         clearTimeout(inactivityTimerRef.current);
       }
     };
-  }, [isModelLoaded, isUserInteracting, isVisible, startInactivityTimer]);
+  }, [isNavigating, isVisible, startInactivityTimer, appMode]);
 
-  useEffect(() => {
-    if (!isModelLoaded || isVisible) return;
+  const handleApprove = () => {
+    if (!isApproved) return;
 
-    const handleInteraction = () => {
-      lastInteractionTimeRef.current = Date.now();
-      startInactivityTimer();
-    };
+    if (appMode === "default") {
+      localStorage.setItem(STORAGE_KEY, "true");
+    }
 
-    window.addEventListener("mousemove", handleInteraction);
-    window.addEventListener("touchmove", handleInteraction);
-    window.addEventListener("mousedown", handleInteraction);
-    window.addEventListener("touchstart", handleInteraction);
+    setIsVisible(false);
+  };
 
-    return () => {
-      window.removeEventListener("mousemove", handleInteraction);
-      window.removeEventListener("touchmove", handleInteraction);
-      window.removeEventListener("mousedown", handleInteraction);
-      window.removeEventListener("touchstart", handleInteraction);
-    };
-  }, [isModelLoaded, isVisible, startInactivityTimer]);
+  if (appMode === "default" && localStorage.getItem(STORAGE_KEY) === "true")
+    return null;
 
   return (
     <div
-      className="fixed inset-0 z-100 pointer-events-none flex flex-col items-center justify-center backdrop-blur-md bg-background/80 transition-opacity duration-500 data-[state=show]:animate-in fade-in data-[state=hide]:animate-out fade-out fill-mode-forwards"
-      onClick={onInteraction}
-      onTouchStart={onInteraction}
+      className="fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-md bg-background/80 transition-opacity duration-500 data-[state=show]:animate-in fade-in data-[state=hide]:animate-out fade-out fill-mode-forwards data-[state=hide]:pointer-events-none data-[state=hide]:-z-1"
       data-state={isVisible ? "show" : "hide"}
     >
-      <div className="flex flex-col items-center gap-8 px-4">
+      <div className="flex flex-col items-center gap-8 px-4 max-w-2xl pointer-events-auto">
         <Image
           src="/logo.svg"
           width={200}
@@ -107,14 +120,55 @@ export function Welcome({
           {t("welcome.title")}
         </h1>
 
-        <div className="flex flex-col gap-6 items-center">
+        <div className="flex flex-col gap-6 items-center w-full">
           <p className="text-lg md:text-xl text-white/90 text-center max-w-lg">
             {t("welcome.description")}
           </p>
 
-          <div className="flex flex-col items-center">
-            <Hand className="size-8 text-white animate-slide-right" />
+          <div className="flex items-center space-x-3 bg-white/10 p-4 rounded-lg w-full max-w-lg">
+            <Checkbox
+              id="terms"
+              checked={isApproved}
+              onCheckedChange={(checked: boolean) =>
+                setIsApproved(checked === true)
+              }
+            />
+            <Label
+              htmlFor="terms"
+              className="text-sm text-white cursor-pointer leading-relaxed"
+            >
+              {t("welcome.terms").split("{gdpr}")[0]}
+
+              <Link
+                href="/gdpr"
+                className="underline underline-offset-4 hover:opacity-80 transition-colors"
+              >
+                {t("welcome.gdpr")}
+              </Link>
+
+              {t("welcome.terms").split("{gdpr}")[1].split("{privacy}")[0]}
+
+              <Link
+                href="/privacy"
+                className="underline underline-offset-4 hover:opacity-80 transition-colors"
+              >
+                {t("welcome.privacy")}
+              </Link>
+
+              {t("welcome.terms").split("{privacy}")[1]}
+            </Label>
           </div>
+
+          <Button
+            onClick={handleApprove}
+            size="lg"
+            className={clsx("rounded-full", {
+              "cursor-pointer": isApproved,
+            })}
+            disabled={!isApproved}
+          >
+            {t("welcome.continue")}
+          </Button>
         </div>
       </div>
     </div>
