@@ -1,4 +1,5 @@
 import { useNavigation } from "@/contexts/navigation-context";
+import { useLanguage } from "@/contexts/language-context";
 import clsx from "clsx";
 import { useState } from "react";
 import Image from "next/image";
@@ -24,16 +25,17 @@ function Information({
   onPhotoLoaded?: () => void;
 }) {
   const { isNavigating } = useNavigation();
+  const { t } = useLanguage();
 
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   return (
     <div
       className={clsx(
-        "fixed z-45 top-0 right-0 p-4 transition-all duration-500",
+        "fixed z-50 right-0 p-4 transition-all duration-500",
         {
-          "w-full h-full": isExpanded,
-          "w-sm": !isExpanded,
+          "w-full top-0 h-full": isExpanded,
+          "w-sm top-12": !isExpanded,
         },
         {
           "translate-x-full": isNavigating || !isVisible,
@@ -46,8 +48,7 @@ function Information({
             {result?.name ? `Sen de Bu Hikâyedesin, ${result.name}` : "Sen de Bu Hikâyedesin"}
           </CardTitle>
           <CardDescription className="text-xs">
-            Türk Hava Yolları’nın 500. uçağında senin bulunduğun alanı 2D olarak
-            inceleyebilirsin.
+            {t("information.description")}
           </CardDescription>
           <CardAction>
             <Button
