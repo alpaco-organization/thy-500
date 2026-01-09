@@ -49,11 +49,18 @@ function Camera({
   onAnimationComplete: () => void;
 }) {
   const { camera } = useThree();
+  const {setIsNavigating} = useNavigation();
+
   const controlsRef = useRef<any>(null);
+
   const targetCameraPos = useRef<[number, number, number] | null>(null);
   const targetControlsPos = useRef<[number, number, number] | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const initialCameraPos = useRef<[number, number, number] | null>(null);
+
+  useEffect(() => {
+    setIsNavigating(isAnimating);
+  }, [isAnimating]);
 
   useEffect(() => {
     if (!initialCameraPos.current) {
@@ -174,7 +181,7 @@ function CircleMarker({ position }: { position: [number, number, number] }) {
 }
 
 export default function Home() {
-  const { isNavigating, setIsNavigating } = useNavigation();
+  const { setIsNavigating } = useNavigation();
 
   const [targetPosition, setTargetPosition] = useState<
     [number, number, number] | null
@@ -217,10 +224,6 @@ export default function Home() {
     setIsSearchComplete(false);
   };
 
-  const handleWelcomeInteraction = () => {
-    setIsNavigating(true);
-  };
-
   const handlePointerDown = () => {
     setIsNavigating(true);
   };
@@ -233,11 +236,7 @@ export default function Home() {
     <div className="fixed w-screen h-full">
       <Header />
       {isModelLoaded ? (
-        <Welcome
-          isModelLoaded={isModelLoaded}
-          isUserInteracting={isNavigating}
-          onInteraction={handleWelcomeInteraction}
-        />
+        <Welcome onTimeout={handleReset}/>
       ) : (
         <Splash />
       )}

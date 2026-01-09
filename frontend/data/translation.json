@@ -13,7 +13,11 @@
     },
     "welcome": {
       "title": "Be Part of TK Family with Turkish Airlines’ 500th Aircraft!",
-      "description": "Discover your photo among thousands of photos on Turkish Airlines' 500th aircraft."
+      "description": "Discover your photo among thousands of photos on Turkish Airlines' 500th aircraft.",
+      "terms": "I have read and accept the {gdpr} and {privacy}.",
+      "gdpr": "GDPR Agreement",
+      "privacy": "Privacy Policy",
+      "continue": "Continue"
     }
   },
   "tr": {
@@ -30,7 +34,11 @@
     },
     "welcome": {
       "title": "Türk Hava Yolları'nın 500. Uçağı TK Aile'de Sen de Varsın!",
-      "description": "Türk Hava Yolları'nın 500. uçağı üzerinde yer alan binlerce fotoğraf arasından kendi fotoğrafını keşfet."
+      "description": "Türk Hava Yolları'nın 500. uçağı üzerinde yer alan binlerce fotoğraf arasından kendi fotoğrafını keşfet.",
+      "terms": "{gdpr} ve {privacy} okudum ve kabul ediyorum.",
+      "gdpr": "KVKK Sözleşmesi'ni",
+      "privacy": "Gizlilik Politikası'nı",
+      "continue": "Devam Et"
     }
   }
 }
