@@ -12,7 +12,7 @@ import clsx from "clsx";
 type SearchType = "identity" | "fullName";
 
 interface SearchProps {
-  onSearch: (searchType: SearchType, query: string) => void;
+  onSearch: (searchType: SearchType, query: string) => Promise<void>;
   onReset?: () => void;
   isSearchComplete?: boolean;
 }
@@ -37,9 +37,7 @@ export function Search({
     try {
       await onSearch(searchType, query.trim());
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
+      setIsLoading(false);
     }
   };
 
