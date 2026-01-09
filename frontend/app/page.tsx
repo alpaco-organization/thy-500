@@ -9,9 +9,37 @@ import { Welcome } from "@/components/welcome";
 import { useNavigation } from "@/contexts/navigation-context";
 import * as THREE from "three";
 import Information from "@/components/information";
+import { searchPerson, type PersonSearchOut, type SearchType } from "@/lib/services/search";
 import Header from "@/components/header";
 
 const INITIAL_CAMERA_POSITION: [number, number, number] = [-30, 4, 20];
+
+function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
+  return new Promise((resolve) => {
+    if (!url) return resolve();
+    const img = new window.Image();
+    let settled = false;
+
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+
+    const timeout = window.setTimeout(finish, timeoutMs);
+
+    img.onload = () => {
+      window.clearTimeout(timeout);
+      finish();
+    };
+    img.onerror = () => {
+      window.clearTimeout(timeout);
+      finish();
+    };
+
+    img.src = url;
+  });
+}
 
 function Model({ onLoad }: { onLoad?: () => void }) {
   const { scene } = useGLTF("/modal.glb");
@@ -176,6 +204,8 @@ function CircleMarker({ position }: { position: [number, number, number] }) {
 export default function Home() {
   const { isNavigating, setIsNavigating } = useNavigation();
 
+  const searchCompleteResolverRef = useRef<null | (() => void)>(null);
+
   const [targetPosition, setTargetPosition] = useState<
     [number, number, number] | null
   >(null);
@@ -184,37 +214,68 @@ export default function Home() {
   const [isModelLoaded, setIsModelLoaded] = useState<boolean>(false);
   const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
   const [circleVisible, setCircleVisible] = useState<boolean>(false);
+  const [searchResult, setSearchResult] = useState<PersonSearchOut | null>(null);
+  const [isAnimationDone, setIsAnimationDone] = useState<boolean>(false);
+  const [isPhotoLoaded, setIsPhotoLoaded] = useState<boolean>(false);
 
   const handleReset = () => {
+    searchCompleteResolverRef.current?.();
+    searchCompleteResolverRef.current = null;
+
     setTargetPosition(null);
     setShouldAnimate(false);
     setIsResetting(true);
     setIsSearchComplete(false);
     setCircleVisible(false);
+    setSearchResult(null);
+    setIsAnimationDone(false);
+    setIsPhotoLoaded(false);
   };
 
   const handleAnimationComplete = () => {
     setIsResetting(false);
     setShouldAnimate(false);
-    if (targetPosition) {
-      setCircleVisible(true);
-      setIsSearchComplete(true);
-    }
+    setIsAnimationDone(true);
   };
 
+  useEffect(() => {
+    const ready = Boolean(targetPosition) && isAnimationDone && isPhotoLoaded;
+    setCircleVisible(ready);
+    setIsSearchComplete(ready);
+
+    if (ready) {
+      searchCompleteResolverRef.current?.();
+      searchCompleteResolverRef.current = null;
+    }
+  }, [targetPosition, isAnimationDone, isPhotoLoaded]);
+
   const handleSearch = async (
-    searchType: "identity" | "fullName",
+    searchType: SearchType,
     query: string
   ) => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const donePromise = new Promise<void>((resolve) => {
+      searchCompleteResolverRef.current = resolve;
+    });
 
-    const fixedCoords: [number, number, number] = [2, 3, 5];
-
-    setTargetPosition(fixedCoords);
-    setShouldAnimate(true);
-    setIsResetting(false);
+    setIsAnimationDone(false);
+    setIsPhotoLoaded(false);
     setCircleVisible(false);
     setIsSearchComplete(false);
+
+    const result = await searchPerson({ searchType, query });
+    await preloadImage(result.url);
+    setIsPhotoLoaded(true);
+    setSearchResult(result);
+
+    // Map 2D coords to the 3D scene: x -> x, y -> z, keep y (height) constant.
+    console.log("Search result:", result);
+    const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
+
+    setTargetPosition(coords);
+    setShouldAnimate(true);
+    setIsResetting(false);
+
+    await donePromise;
   };
 
   const handleWelcomeInteraction = () => {
@@ -242,7 +303,11 @@ export default function Home() {
         <Splash />
       )}
 
-      <Information isSearchComplete={isSearchComplete} />
+      <Information
+        isVisible={Boolean(searchResult)}
+        result={searchResult}
+        onPhotoLoaded={() => setIsPhotoLoaded(true)}
+      />
 
       <Search
         onSearch={handleSearch}

@@ -13,8 +13,17 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Maximize, Minimize } from "lucide-react";
+import type { PersonSearchOut } from "@/lib/services/search";
 
-function Information({ isSearchComplete }: { isSearchComplete: boolean }) {
+function Information({
+  isVisible,
+  result,
+  onPhotoLoaded,
+}: {
+  isVisible: boolean;
+  result: PersonSearchOut | null;
+  onPhotoLoaded?: () => void;
+}) {
   const { isNavigating } = useNavigation();
   const { t } = useLanguage();
 
@@ -29,13 +38,15 @@ function Information({ isSearchComplete }: { isSearchComplete: boolean }) {
           "w-sm top-12": !isExpanded,
         },
         {
-          "translate-x-full": isNavigating || !isSearchComplete,
+          "translate-x-full": isNavigating || !isVisible,
         }
       )}
     >
       <Card className="border-none w-full h-full py-4 rounded-2xl gap-4">
         <CardHeader className="px-4 gap-1">
-          <CardTitle className="text-sm">{t("information.title")}</CardTitle>
+          <CardTitle className="text-sm">
+            {result?.name ? `Sen de Bu Hikâyedesin, ${result.name}` : "Sen de Bu Hikâyedesin"}
+          </CardTitle>
           <CardDescription className="text-xs">
             {t("information.description")}
           </CardDescription>
@@ -55,11 +66,15 @@ function Information({ isSearchComplete }: { isSearchComplete: boolean }) {
         </CardHeader>
         <CardContent className="overflow-hidden px-4">
           <Image
-            src="/preview.png"
-            alt={t("information.imageAlt")}
+            src={result?.url || "/preview.png"}
+            alt={result?.name ? `${result.name} 2D Image` : "Preview 2D Image"}
             width={500}
             height={500}
             className="w-full h-full object-cover object-center rounded-xl border border-border"
+            unoptimized={Boolean(result?.url)}
+            onLoadingComplete={() => {
+              if (result?.url) onPhotoLoaded?.();
+            }}
           />
         </CardContent>
       </Card>
