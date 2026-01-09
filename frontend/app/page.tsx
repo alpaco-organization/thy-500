@@ -9,6 +9,7 @@ import { Welcome } from "@/components/welcome";
 import { useNavigation } from "@/contexts/navigation-context";
 import * as THREE from "three";
 import Information from "@/components/information";
+import Header from "@/components/header";
 
 const INITIAL_CAMERA_POSITION: [number, number, number] = [-30, 4, 20];
 
@@ -90,7 +91,13 @@ function Camera({
       targetControlsPos.current = targetPosition;
       setIsAnimating(true);
     }
-  }, [targetPosition, shouldAnimate, isResetting, INITIAL_CAMERA_POSITION, camera]);
+  }, [
+    targetPosition,
+    shouldAnimate,
+    isResetting,
+    INITIAL_CAMERA_POSITION,
+    camera,
+  ]);
 
   useFrame(() => {
     if (
@@ -148,11 +155,7 @@ function Camera({
   );
 }
 
-function CircleMarker({
-  position,
-}: {
-  position: [number, number, number];
-}) {
+function CircleMarker({ position }: { position: [number, number, number] }) {
   const meshRef = useRef<THREE.Mesh | null>(null);
 
   useFrame((state) => {
@@ -171,7 +174,7 @@ function CircleMarker({
 }
 
 export default function Home() {
-  const { setIsNavigating } = useNavigation();
+  const { isNavigating, setIsNavigating } = useNavigation();
 
   const [targetPosition, setTargetPosition] = useState<
     [number, number, number] | null
@@ -181,8 +184,6 @@ export default function Home() {
   const [isModelLoaded, setIsModelLoaded] = useState<boolean>(false);
   const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
   const [circleVisible, setCircleVisible] = useState<boolean>(false);
-
-  const [isUserInteracting, setIsUserInteracting] = useState<boolean>(false);
 
   const handleReset = () => {
     setTargetPosition(null);
@@ -217,25 +218,24 @@ export default function Home() {
   };
 
   const handleWelcomeInteraction = () => {
-    setIsUserInteracting(true);
+    setIsNavigating(true);
   };
 
   const handlePointerDown = () => {
-    setIsUserInteracting(true);
     setIsNavigating(true);
   };
 
   const handlePointerUp = () => {
-    setIsUserInteracting(false);
     setIsNavigating(false);
   };
 
   return (
     <div className="fixed w-screen h-full">
+      <Header />
       {isModelLoaded ? (
         <Welcome
           isModelLoaded={isModelLoaded}
-          isUserInteracting={isUserInteracting}
+          isUserInteracting={isNavigating}
           onInteraction={handleWelcomeInteraction}
         />
       ) : (

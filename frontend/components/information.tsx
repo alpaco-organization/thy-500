@@ -1,4 +1,5 @@
 import { useNavigation } from "@/contexts/navigation-context";
+import { useLanguage } from "@/contexts/language-context";
 import clsx from "clsx";
 import { useState } from "react";
 import Image from "next/image";
@@ -15,16 +16,17 @@ import { Maximize, Minimize } from "lucide-react";
 
 function Information({ isSearchComplete }: { isSearchComplete: boolean }) {
   const { isNavigating } = useNavigation();
+  const { t } = useLanguage();
 
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   return (
     <div
       className={clsx(
-        "fixed z-45 top-0 right-0 p-4 transition-all duration-500",
+        "fixed z-50 right-0 p-4 transition-all duration-500",
         {
-          "w-full h-full": isExpanded,
-          "w-sm": !isExpanded,
+          "w-full top-0 h-full": isExpanded,
+          "w-sm top-12": !isExpanded,
         },
         {
           "translate-x-full": isNavigating || !isSearchComplete,
@@ -33,10 +35,9 @@ function Information({ isSearchComplete }: { isSearchComplete: boolean }) {
     >
       <Card className="border-none w-full h-full py-4 rounded-2xl gap-4">
         <CardHeader className="px-4 gap-1">
-          <CardTitle className="text-sm">Sen de Bu Hikâyedesin</CardTitle>
+          <CardTitle className="text-sm">{t("information.title")}</CardTitle>
           <CardDescription className="text-xs">
-            Türk Hava Yolları’nın 500. uçağında senin bulunduğun alanı 2D olarak
-            inceleyebilirsin.
+            {t("information.description")}
           </CardDescription>
           <CardAction>
             <Button
@@ -55,7 +56,7 @@ function Information({ isSearchComplete }: { isSearchComplete: boolean }) {
         <CardContent className="overflow-hidden px-4">
           <Image
             src="/preview.png"
-            alt="Preview 2D Image"
+            alt={t("information.imageAlt")}
             width={500}
             height={500}
             className="w-full h-full object-cover object-center rounded-xl border border-border"
