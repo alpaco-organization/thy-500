@@ -1,0 +1,36 @@
+{
+  "en": {
+    "information": {
+      "title": "You Are Part of This Story",
+      "description": "You can examine your location on Turkish Airlines' 500th aircraft in 2D.",
+      "imageAlt": "Preview 2D Image"
+    },
+    "search": {
+      "fullName": "Full Name",
+      "identityNumber": "Staff ID",
+      "fullNamePlaceholder": "Enter Full Name",
+      "identityNumberPlaceholder": "Enter Staff ID"
+    },
+    "welcome": {
+      "title": "Be Part of TK Family with Turkish Airlines’ 500th Aircraft!",
+      "description": "Discover your photo among thousands of photos on Turkish Airlines' 500th aircraft."
+    }
+  },
+  "tr": {
+    "information": {
+      "title": "Sen de Bu Hikâyedesin",
+      "description": "Türk Hava Yolları'nın 500. uçağında senin bulunduğun alanı 2D olarak inceleyebilirsin.",
+      "imageAlt": "Önizleme 2D Görüntüsü"
+    },
+    "search": {
+      "fullName": "Ad Soyad",
+      "identityNumber": "Sicil Numarası",
+      "fullNamePlaceholder": "Ad Soyad Giriniz",
+      "identityNumberPlaceholder": "Sicil Numarası Giriniz"
+    },
+    "welcome": {
+      "title": "Türk Hava Yolları'nın 500. Uçağı TK Aile'de Sen de Varsın!",
+      "description": "Türk Hava Yolları'nın 500. uçağı üzerinde yer alan binlerce fotoğraf arasından kendi fotoğrafını keşfet."
+    }
+  }
+}
