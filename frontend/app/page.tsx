@@ -294,8 +294,6 @@ export default function Home() {
       setIsPhotoLoaded(true);
       setSearchResult(result);
 
-      // Map 2D coords to the 3D scene: x -> x, y -> z, keep y (height) constant.
-      console.log("Search result:", result);
       const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
 
       setTargetPosition(coords);
@@ -310,11 +308,9 @@ export default function Home() {
             t("errors.personNotFound").replace("{query}", query)
           );
         } else {
-          // Prefer a stable, translated message; ApiError.message is generic (e.g. "Search failed").
           setErrorMessage(t("errors.searchFailed"));
         }
       } else if (error instanceof Error) {
-        // Fallback if something else throws a useful message.
         setErrorMessage(error.message || t("errors.searchFailed"));
       } else {
         setErrorMessage(t("errors.unknown"));
@@ -335,7 +331,7 @@ export default function Home() {
   return (
     <div className="fixed w-screen h-full bg-background">
       {errorMessage && (
-        <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300">
+        <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300 text-center">
           {errorMessage}
         </div>
       )}
