@@ -3,6 +3,11 @@
     "common": {
       "or": "or"
     },
+    "errors": {
+      "personNotFound": "No such person found: \"{query}\". Please try another search.",
+      "searchFailed": "An error occurred during search. Please try again.",
+      "unknown": "An unexpected error occurred. Please try again."
+    },
     "information": {
       "title": "Congratulations! Here's Your Place in the TK Family"
     },
@@ -24,6 +29,11 @@
     }
   },
   "tr": {
+    "errors": {
+      "personNotFound": "Böyle bir kişi bulunamadı: \"{query}\". Lütfen başka bir arama yapın.",
+      "searchFailed": "Arama sırasında bir hata oluştu. Lütfen tekrar deneyin.",
+      "unknown": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin."
+    },
     "information": {
       "title": "Tebrikler! İşte TK Aile'deki Yerin"
     },
