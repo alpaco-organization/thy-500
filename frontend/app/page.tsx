@@ -1,16 +1,18 @@
 "use client";
 
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { Canvas, useThree, useFrame, type RootState } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { useState, useRef, useEffect } from "react";
 import { Search } from "@/components/search";
 import { Splash } from "@/components/splash";
 import { Welcome } from "@/components/welcome";
 import { useNavigation } from "@/contexts/navigation-context";
+import { useLanguage } from "@/contexts/language-context";
 import * as THREE from "three";
 import Information from "@/components/information";
 import {
   searchPerson,
+  ApiError,
   type PersonSearchOut,
   type SearchType,
 } from "@/lib/services/search";
@@ -198,7 +200,7 @@ function Camera({
 function CircleMarker({ position }: { position: [number, number, number] }) {
   const meshRef = useRef<THREE.Mesh | null>(null);
 
-  useFrame((state) => {
+  useFrame((state: RootState) => {
     if (!meshRef.current || !meshRef.current.material) return;
     const t = state.clock.getElapsedTime();
     const opacity = 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(t * 2));
@@ -215,6 +217,7 @@ function CircleMarker({ position }: { position: [number, number, number] }) {
 
 export default function Home() {
   const { setIsNavigating } = useNavigation();
+  const { t } = useLanguage();
 
   const searchCompleteResolverRef = useRef<null | (() => void)>(null);
 
@@ -291,8 +294,6 @@ export default function Home() {
       setIsPhotoLoaded(true);
       setSearchResult(result);
 
-      // Map 2D coords to the 3D scene: x -> x, y -> z, keep y (height) constant.
-      console.log("Search result:", result);
       const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
 
       setTargetPosition(coords);
@@ -300,8 +301,20 @@ export default function Home() {
       setIsResetting(false);
 
       await donePromise;
-    } catch (error) {
-      setErrorMessage("Arama sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+    } catch (error: unknown) {
+      if (error instanceof ApiError) {
+        if (error.status === 404) {
+          setErrorMessage(
+            t("errors.personNotFound").replace("{query}", query)
+          );
+        } else {
+          setErrorMessage(t("errors.searchFailed"));
+        }
+      } else if (error instanceof Error) {
+        setErrorMessage(error.message || t("errors.searchFailed"));
+      } else {
+        setErrorMessage(t("errors.unknown"));
+      }
       setTimeout(() => setErrorMessage(""), 5000);
       handleReset();
     }
@@ -318,7 +331,7 @@ export default function Home() {
   return (
     <div className="fixed w-screen h-full bg-background">
       {errorMessage && (
-        <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300">
+        <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300 text-center">
           {errorMessage}
         </div>
       )}
