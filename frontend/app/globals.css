@@ -116,3 +116,13 @@
     @apply p-px bg-linear-to-r from-gold to-white backdrop-blur-lg;
   }
 }
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-linear-to-r from-gold to-white bg-clip-text text-transparent inline-block;
+  }
+
+  .border-gradient {
+    @apply p-px bg-linear-to-r from-gold to-white backdrop-blur-lg;
+  }
+}
