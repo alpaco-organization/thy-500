@@ -15,11 +15,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   const [isNavigating, setIsNavigating] = useState<boolean>(false);
 
   const value = { isNavigating, setIsNavigating };
-
-  useEffect(() => {
-    console.log("isNavigating changed:", isNavigating);
-  }, [isNavigating]);
-
+  
   return (
     <NavigationContext.Provider value={value}>
       {children}

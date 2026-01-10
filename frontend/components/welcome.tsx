@@ -103,10 +103,10 @@ export function Welcome({ onTimeout }: WelcomeProps) {
 
   return (
     <div
-      className="fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-md bg-background/80 transition-opacity duration-500 data-[state=show]:animate-in fade-in data-[state=hide]:animate-out fade-out fill-mode-forwards data-[state=hide]:pointer-events-none data-[state=hide]:-z-1"
+      className="fixed inset-0 z-100 flex flex-col items-center justify-center backdrop-blur-md bg-background/80 transition-opacity duration-500 data-[state=show]:animate-in fade-in data-[state=hide]:animate-out fade-out fill-mode-forwards data-[state=hide]:pointer-events-none data-[state=hide]:-z-1 px-4"
       data-state={isVisible ? "show" : "hide"}
     >
-      <div className="flex flex-col items-center gap-8 px-4 max-w-2xl pointer-events-auto">
+      <div className="flex flex-col items-center gap-8 pointer-events-auto">
         <Image
           src="/logo.svg"
           width={200}
@@ -116,47 +116,55 @@ export function Welcome({ onTimeout }: WelcomeProps) {
           priority
         />
 
-        <h1 className="text-3xl md:text-4xl max-w-lg font-semibold text-white text-center">
-          {t("welcome.title")}
-        </h1>
+        <div className="flex flex-col items-center gap-3 text-center">
+          <h2 className="text-lg md:text-xl uppercase tracking-[0.6rem] font-light text-gradient text-center">
+            {t("welcome.subtitle")}
+          </h2>
 
-        <div className="flex flex-col gap-6 items-center w-full">
-          <p className="text-lg md:text-xl text-white/90 text-center max-w-lg">
+          <h1 className="text-5xl leading-[1.15] uppercase md:text-6xl font-semibold text-gradient text-center">
+            {t("welcome.title")}
+          </h1>
+          <p className="text-lg md:text-xl font-light text-white text-center max-w-xl">
             {t("welcome.description")}
           </p>
+        </div>
 
-          <div className="flex items-center space-x-3 bg-white/10 p-4 rounded-lg w-full max-w-lg">
-            <Checkbox
-              id="terms"
-              checked={isApproved}
-              onCheckedChange={(checked: boolean) =>
-                setIsApproved(checked === true)
-              }
-            />
-            <Label
-              htmlFor="terms"
-              className="text-sm text-white cursor-pointer leading-relaxed"
-            >
-              {t("welcome.terms").split("{gdpr}")[0]}
-
-              <Link
-                href="/gdpr"
-                className="underline underline-offset-4 hover:opacity-80 transition-colors"
+        <div className="flex flex-col gap-6 items-center w-full">
+          <div className="border-gradient rounded-2xl sm:rounded-full">
+            <div className="flex items-start space-x-3 bg-background/90 border backdrop-blur-lg border-gold/40 py-4 px-6 rounded-2xl sm:rounded-full max-w-xl">
+              <Checkbox
+                id="terms"
+                checked={isApproved}
+                onCheckedChange={(checked: boolean) =>
+                  setIsApproved(checked === true)
+                }
+                className="mt-1"
+              />
+              <Label
+                htmlFor="terms"
+                className="text-sm flex-wrap text-white cursor-pointer leading-relaxed"
               >
-                {t("welcome.gdpr")}
-              </Link>
+                {t("welcome.terms").split("{gdpr}")[0]}
 
-              {t("welcome.terms").split("{gdpr}")[1].split("{privacy}")[0]}
+                <Link
+                  href="/gdpr"
+                  className="underline underline-offset-4 hover:opacity-80 transition-colors"
+                >
+                  {t("welcome.gdpr")}
+                </Link>
 
-              <Link
-                href="/privacy"
-                className="underline underline-offset-4 hover:opacity-80 transition-colors"
-              >
-                {t("welcome.privacy")}
-              </Link>
+                {t("welcome.terms").split("{gdpr}")[1].split("{privacy}")[0]}
 
-              {t("welcome.terms").split("{privacy}")[1]}
-            </Label>
+                <Link
+                  href="/privacy"
+                  className="underline underline-offset-4 hover:opacity-80 transition-colors"
+                >
+                  {t("welcome.privacy")}
+                </Link>
+
+                {t("welcome.terms").split("{privacy}")[1]}
+              </Label>
+            </div>
           </div>
 
           <Button

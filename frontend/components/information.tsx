@@ -27,50 +27,30 @@ function Information({
   const { isNavigating } = useNavigation();
   const { t } = useLanguage();
 
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
   return (
     <div
       className={clsx(
-        "fixed z-50 right-0 p-4 transition-all duration-500",
-        {
-          "w-full top-0 h-full": isExpanded,
-          "w-sm top-12": !isExpanded,
-        },
+        "fixed z-50 top-12 right-0 p-4 transition-all duration-500",
         {
           "translate-x-full": isNavigating || !isVisible,
         }
       )}
     >
-      <Card className="border-none w-full h-full py-4 rounded-2xl gap-4">
-        <CardHeader className="px-4 gap-1">
-          <CardTitle className="text-sm">
-            {result?.name ? `Sen de Bu Hikâyedesin, ${result.name}` : "Sen de Bu Hikâyedesin"}
+      <Card className="w-full h-full pt-4 pb-0 rounded-2xl gap-4 overflow-hidden bg-[#3F3F3F]/40 backdrop-blur-xl border border-[#535353]/80">
+        <CardHeader className="px-4 gap-1 items-center text-center">
+          <CardTitle className="text-md text-white">
+            {result?.name
+              ? `${t("information.title")}, ${result.name}`
+              : t("information.title")}
           </CardTitle>
-          <CardDescription className="text-xs">
-            {t("information.description")}
-          </CardDescription>
-          <CardAction>
-            <Button
-              variant="secondary"
-              onClick={() => setIsExpanded(!isExpanded)}
-              size="icon-sm"
-            >
-              {isExpanded ? (
-                <Minimize className="size-4" />
-              ) : (
-                <Maximize className="size-4" />
-              )}
-            </Button>
-          </CardAction>
         </CardHeader>
-        <CardContent className="overflow-hidden px-4">
+        <CardContent className="overflow-hidden px-0">
           <Image
             src={result?.url || "/preview.png"}
-            alt={result?.name ? `${result.name} 2D Image` : "Preview 2D Image"}
+            alt=""
             width={500}
             height={500}
-            className="w-full h-full object-cover object-center rounded-xl border border-border"
+            className="w-full max-w-2xs h-full object-cover object-center rounded-xl"
             unoptimized={Boolean(result?.url)}
             onLoadingComplete={() => {
               if (result?.url) onPhotoLoaded?.();

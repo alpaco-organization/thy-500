@@ -9,10 +9,15 @@ import { Welcome } from "@/components/welcome";
 import { useNavigation } from "@/contexts/navigation-context";
 import * as THREE from "three";
 import Information from "@/components/information";
-import { searchPerson, type PersonSearchOut, type SearchType } from "@/lib/services/search";
+import {
+  searchPerson,
+  type PersonSearchOut,
+  type SearchType,
+} from "@/lib/services/search";
 import Header from "@/components/header";
 
-const INITIAL_CAMERA_POSITION: [number, number, number] = [-30, 4, 20];
+const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
+const INITIAL_MODEL_POSITION: [number, number, number] = [0, 0, 0];
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -48,7 +53,7 @@ function Model({ onLoad }: { onLoad?: () => void }) {
     onLoad?.();
   }, [onLoad]);
 
-  return <primitive object={scene} position={[0, 0, 10]} />;
+  return <primitive object={scene} position={INITIAL_MODEL_POSITION} />;
 }
 
 function ModelLights() {
@@ -77,7 +82,7 @@ function Camera({
   onAnimationComplete: () => void;
 }) {
   const { camera } = useThree();
-  const {setIsNavigating} = useNavigation();
+  const { setIsNavigating } = useNavigation();
 
   const controlsRef = useRef<any>(null);
 
@@ -107,7 +112,7 @@ function Camera({
       } else {
         targetCameraPos.current = INITIAL_CAMERA_POSITION;
       }
-      targetControlsPos.current = [0, 0, 10];
+      targetControlsPos.current = INITIAL_MODEL_POSITION;
       setIsAnimating(true);
     } else if (shouldAnimate && targetPosition) {
       const [x, y, z] = targetPosition;
@@ -184,8 +189,8 @@ function Camera({
       enableZoom
       enablePan={false}
       enabled={!isAnimating}
-      minDistance={8}
-      maxDistance={50}
+      minDistance={10}
+      maxDistance={80}
     />
   );
 }
@@ -221,9 +226,22 @@ export default function Home() {
   const [isModelLoaded, setIsModelLoaded] = useState<boolean>(false);
   const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
   const [circleVisible, setCircleVisible] = useState<boolean>(false);
-  const [searchResult, setSearchResult] = useState<PersonSearchOut | null>(null);
+  const [searchResult, setSearchResult] = useState<PersonSearchOut | null>(
+    null
+  );
   const [isAnimationDone, setIsAnimationDone] = useState<boolean>(false);
   const [isPhotoLoaded, setIsPhotoLoaded] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
+  const [isSplashReady, setIsSplashReady] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsSplashReady(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleReset = () => {
     searchCompleteResolverRef.current?.();
@@ -237,6 +255,7 @@ export default function Home() {
     setSearchResult(null);
     setIsAnimationDone(false);
     setIsPhotoLoaded(false);
+    setQuery("");
   };
 
   const handleAnimationComplete = () => {
@@ -256,10 +275,7 @@ export default function Home() {
     }
   }, [targetPosition, isAnimationDone, isPhotoLoaded]);
 
-  const handleSearch = async (
-    searchType: SearchType,
-    query: string
-  ) => {
+  const handleSearch = async (searchType: SearchType, query: string) => {
     const donePromise = new Promise<void>((resolve) => {
       searchCompleteResolverRef.current = resolve;
     });
@@ -269,20 +285,26 @@ export default function Home() {
     setCircleVisible(false);
     setIsSearchComplete(false);
 
-    const result = await searchPerson({ searchType, query });
-    await preloadImage(result.url);
-    setIsPhotoLoaded(true);
-    setSearchResult(result);
+    try {
+      const result = await searchPerson({ searchType, query });
+      await preloadImage(result.url);
+      setIsPhotoLoaded(true);
+      setSearchResult(result);
 
-    // Map 2D coords to the 3D scene: x -> x, y -> z, keep y (height) constant.
-    console.log("Search result:", result);
-    const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
+      // Map 2D coords to the 3D scene: x -> x, y -> z, keep y (height) constant.
+      console.log("Search result:", result);
+      const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
 
-    setTargetPosition(coords);
-    setShouldAnimate(true);
-    setIsResetting(false);
+      setTargetPosition(coords);
+      setShouldAnimate(true);
+      setIsResetting(false);
 
-    await donePromise;
+      await donePromise;
+    } catch (error) {
+      setErrorMessage("Arama sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+      setTimeout(() => setErrorMessage(""), 5000);
+      handleReset();
+    }
   };
 
   const handlePointerDown = () => {
@@ -294,10 +316,15 @@ export default function Home() {
   };
 
   return (
-    <div className="fixed w-screen h-full">
+    <div className="fixed w-screen h-full bg-background">
+      {errorMessage && (
+        <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300">
+          {errorMessage}
+        </div>
+      )}
       <Header />
-      {isModelLoaded ? (
-        <Welcome onTimeout={handleReset}/>
+      {isModelLoaded && isSplashReady ? (
+        <Welcome onTimeout={handleReset} />
       ) : (
         <Splash />
       )}
@@ -309,13 +336,15 @@ export default function Home() {
       />
 
       <Search
+        query={query}
+        setQuery={setQuery}
         onSearch={handleSearch}
         onReset={handleReset}
         isSearchComplete={isSearchComplete}
       />
 
       <Canvas
-        camera={{ position: INITIAL_CAMERA_POSITION, fov: 50 }}
+        camera={{ position: INITIAL_CAMERA_POSITION, fov: 40 }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
       >
