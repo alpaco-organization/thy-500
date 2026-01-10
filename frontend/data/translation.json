@@ -5,6 +5,11 @@
       "searchFailed": "An error occurred during search. Please try again.",
       "unknown": "An unexpected error occurred. Please try again."
     },
+    "errors": {
+      "personNotFound": "No such person found: \"{query}\". Please try another search.",
+      "searchFailed": "An error occurred during search. Please try again.",
+      "unknown": "An unexpected error occurred. Please try again."
+    },
     "information": {
       "feedbackTitle": "Share Your Thoughts",
       "feedbackDescription": "We'd love to hear your feedback and suggestions about your experience.",
