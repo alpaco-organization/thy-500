@@ -3,21 +3,26 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search as SearchIcon, Loader2, User, IdCard, RotateCcw } from "lucide-react";
+import { Search as SearchIcon, Loader2, RotateCcw } from "lucide-react";
 import { Item, ItemActions, ItemContent } from "@/components/ui/item";
 import { useNavigation } from "@/contexts/navigation-context";
 import { useLanguage } from "@/contexts/language-context";
 import clsx from "clsx";
+import Image from "next/image";
 
 type SearchType = "identity" | "fullName";
 
 interface SearchProps {
+  query: string;
+  setQuery: (query: string) => void;
   onSearch: (searchType: SearchType, query: string) => Promise<void>;
   onReset?: () => void;
   isSearchComplete?: boolean;
 }
 
 export function Search({
+  query,
+  setQuery,
   onSearch,
   onReset,
   isSearchComplete = false,
@@ -26,7 +31,6 @@ export function Search({
   const { t } = useLanguage();
 
   const [searchType, setSearchType] = useState<SearchType>("fullName");
-  const [query, setQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
@@ -42,7 +46,6 @@ export function Search({
   };
 
   const handleReset = () => {
-    setQuery("");
     setIsLoading(false);
     onReset?.();
   };
@@ -50,11 +53,11 @@ export function Search({
   return (
     <div
       className={clsx(
-        "fixed bottom-4 left-1/2 z-40 w-full max-w-lg flex flex-col gap-3 transition-transform duration-300 ease-in-out translate-x-[-50%]",
+        "fixed bottom-0 bg-[#3F3F3F]/40 backdrop-blur-xl p-4 border border-b-0 border-[#535353]/80 rounded-t-3xl left-1/2 z-40 w-full md:max-w-lg flex px-4 flex-col gap-3 transition-transform duration-300 ease-in-out translate-x-[-50%]",
         isNavigating ? "translate-y-[calc(100%+1rem)]" : "translate-y-0"
       )}
     >
-      <div className="flex items-center gap-3 justify-start">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 justify-center">
         <Button
           type="button"
           size="sm"
@@ -64,9 +67,9 @@ export function Search({
             "cursor-pointer": searchType !== "fullName",
           })}
         >
-          <User className="size-4" />
           {t("search.fullName")}
         </Button>
+        <p className="text-xs italic text-white">{t("search.or")}</p>
         <Button
           type="button"
           size="sm"
@@ -76,43 +79,57 @@ export function Search({
             "cursor-pointer": searchType !== "identity",
           })}
         >
-          <IdCard className="size-5" />
+          <Image 
+            src="/thy-logo.png" 
+            alt="THY Logo" 
+            width={50} 
+            height={50}
+            className="inline-block size-4"
+          />
           {t("search.identityNumber")}
         </Button>
       </div>
 
-      <Item className="bg-white rounded-full p-1.5">
-        <ItemContent className="flex items-center gap-4 w-full">
-          <Input
-            type={searchType === "identity" ? "number" : "text"}
-            placeholder={
-              searchType === "identity"
-                ? t("search.identityNumberPlaceholder")
-                : t("search.fullNamePlaceholder")
-            }
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            disabled={isLoading || isSearchComplete}
-            className="bg-transparent border-0 shadow-none"
-          />
-        </ItemContent>
-        <ItemActions>
-          {isSearchComplete && !isLoading ? (
-            <Button size="icon" className="rounded-full" onClick={handleReset}>
-              <RotateCcw />
-            </Button>
-          ) : (
-            <Button
-              size="icon"
-              className="rounded-full"
-              onClick={handleSearch}
-              disabled={isLoading || !query.trim()}
-            >
-              {isLoading ? <Loader2 className="animate-spin" /> : <SearchIcon />}
-            </Button>
-          )}
-        </ItemActions>
-      </Item>
+        <Item className="rounded-full p-1.5 border-white/40 bg-white/10">
+          <ItemContent className="flex items-center gap-4 w-full">
+            <Input
+              type={searchType === "identity" ? "number" : "text"}
+              placeholder={
+                searchType === "identity"
+                  ? t("search.identityNumberPlaceholder")
+                  : t("search.fullNamePlaceholder")
+              }
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              disabled={isLoading || isSearchComplete}
+              className="bg-transparent border-0 shadow-non text-white placeholder:text-white/40"
+            />
+          </ItemContent>
+          <ItemActions>
+            {isSearchComplete && !isLoading ? (
+              <Button
+                size="icon"
+                className="rounded-full"
+                onClick={handleReset}
+              >
+                <RotateCcw />
+              </Button>
+            ) : (
+              <Button
+                size="icon"
+                onClick={handleSearch}
+                disabled={isLoading || !query.trim()}
+                className="rounded-full cursor-pointer disabled:cursor-default"
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <SearchIcon />
+                )}
+              </Button>
+            )}
+          </ItemActions>
+        </Item>
     </div>
   );
 }

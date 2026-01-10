@@ -1,78 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-Thin.woff2") format("woff2"),
-    url("/font/Fellix-Thin.woff") format("woff"),
-    url("/font/Fellix-Thin.ttf") format("truetype");
-  font-weight: 200;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-Light.woff2") format("woff2"),
-    url("/font/Fellix-Light.woff") format("woff"),
-    url("/font/Fellix-Light.ttf") format("truetype");
-  font-weight: 300;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-Regular.woff2") format("woff2"),
-    url("/font/Fellix-Regular.woff") format("woff"),
-    url("/font/Fellix-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-Medium.woff2") format("woff2"),
-    url("/font/Fellix-Medium.woff") format("woff"),
-    url("/font/Fellix-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-SemiBold.woff2") format("woff2"),
-    url("/font/Fellix-SemiBold.woff") format("woff"),
-    url("/font/Fellix-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-Bold.woff2") format("woff2"),
-    url("/font/Fellix-Bold.woff") format("woff"),
-    url("/font/Fellix-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-ExtraBold.woff2") format("woff2"),
-    url("/font/Fellix-ExtraBold.woff") format("woff"),
-    url("/font/Fellix-ExtraBold.ttf") format("truetype");
-  font-weight: 800;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fellix";
-  src: url("/font/Fellix-Black.woff2") format("woff2"),
-    url("/font/Fellix-Black.woff") format("woff"),
-    url("/font/Fellix-Black.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-}
-
 @custom-variant hover (&:hover);
 
 @theme {
@@ -104,17 +32,19 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  --color-gold: var(--gold);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  --font-sans: "Fellix", sans-serif;
+  --font-sans: "Red Hat Display", sans-serif;
 }
 
 :root {
   --foreground: #232b38;
-  --background: #181c23;
+  --background: #090204;
 
   --card: #ffffff;
   --card-foreground: #232b38;
@@ -132,7 +62,7 @@
   --muted-foreground: #526484;
 
   --accent: #dadfe6;
-  --accent-foreground: #181c23;
+  --accent-foreground: #090204;
 
   --destructive: #dc2626;
   --destructive-foreground: #fafafa;
@@ -140,6 +70,8 @@
   --border: #dadfe6;
   --input: #dadfe6;
   --ring: #0a0a0a;
+
+  --gold: #E4C491;
 
   --radius: 0.5rem;
 }
@@ -150,10 +82,20 @@
   }
 
   html {
-    @apply scroll-smooth text-[20px];
+    @apply scroll-smooth text-[14px] sm:text-[16px] md:text-[20px];
   }
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-linear-to-r from-gold to-white bg-clip-text text-transparent inline-block;
+  }
+
+  .border-gradient {
+    @apply p-px bg-linear-to-r from-gold to-white backdrop-blur-lg;
   }
 }

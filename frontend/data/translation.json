@@ -1,18 +1,21 @@
 {
   "en": {
+    "common": {
+      "or": "or"
+    },
     "information": {
-      "title": "You Are Part of This Story",
-      "description": "You can examine your location on Turkish Airlines' 500th aircraft in 2D.",
-      "imageAlt": "Preview 2D Image"
+      "title": "Congratulations! Here's Your Place in the TK Family"
     },
     "search": {
       "fullName": "Full Name",
+      "or": "or",
       "identityNumber": "Staff ID",
       "fullNamePlaceholder": "Enter Full Name",
       "identityNumberPlaceholder": "Enter Staff ID"
     },
     "welcome": {
-      "title": "Be Part of TK Family with Turkish Airlines’ 500th Aircraft!",
+      "subtitle": "To Many Journeys Together",
+      "title": "You Are Also Part of the TK Family",
       "description": "Discover your photo among thousands of photos on Turkish Airlines' 500th aircraft.",
       "terms": "I have read and accept the {gdpr} and {privacy}.",
       "gdpr": "GDPR Agreement",
@@ -22,18 +25,18 @@
   },
   "tr": {
     "information": {
-      "title": "Sen de Bu Hikâyedesin",
-      "description": "Türk Hava Yolları'nın 500. uçağında senin bulunduğun alanı 2D olarak inceleyebilirsin.",
-      "imageAlt": "Önizleme 2D Görüntüsü"
+      "title": "Tebrikler! İşte TK Aile'deki Yerin"
     },
     "search": {
       "fullName": "Ad Soyad",
+      "or": "ya da",
       "identityNumber": "Sicil Numarası",
       "fullNamePlaceholder": "Ad Soyad Giriniz",
       "identityNumberPlaceholder": "Sicil Numarası Giriniz"
     },
     "welcome": {
-      "title": "Türk Hava Yolları'nın 500. Uçağı TK Aile'de Sen de Varsın!",
+      "subtitle": "Birlikte Nice Yolculuklara",
+      "title": "TK Aile'de Sen de Varsın",
       "description": "Türk Hava Yolları'nın 500. uçağı üzerinde yer alan binlerce fotoğraf arasından kendi fotoğrafını keşfet.",
       "terms": "{gdpr} ve {privacy} okudum ve kabul ediyorum.",
       "gdpr": "KVKK Sözleşmesi'ni",
