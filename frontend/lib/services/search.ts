@@ -23,11 +23,6 @@ export class ApiError extends Error {
   }
 }
 
-function getApiBaseUrl(): string {
-  // docker-compose sets NEXT_PUBLIC_API_BASE_URL
-  return process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-}
-
 async function readJsonSafe(res: Response): Promise<any> {
   const text = await res.text();
   if (!text) return undefined;
@@ -47,7 +42,7 @@ export async function searchPerson(params: {
     throw new ApiError("Query is required", 400);
   }
 
-  const url = new URL("/api/search", getApiBaseUrl());
+  const url = new URL("/api/search", window.location.origin);
   url.searchParams.set("searchType", params.searchType);
   url.searchParams.set("query", queryTrimmed);
 
