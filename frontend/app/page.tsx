@@ -20,6 +20,7 @@ import Header from "@/components/header";
 
 const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const INITIAL_MODEL_POSITION: [number, number, number] = [0, 0, 0];
+const RESULT_COORD_SCALE = 1000;
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -294,9 +295,14 @@ export default function Home() {
       setIsPhotoLoaded(true);
       setSearchResult(result);
 
-      // Map 2D coords to the 3D scene: x -> x, y -> z, keep y (height) constant.
+      // Map stored 2D coords to the 3D scene: x -> x, y -> z, keep y (height) constant.
+      // Stored coords are large (e.g. 45508), so we scale them down to scene units.
       console.log("Search result:", result);
-      const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
+      const coords: [number, number, number] = [
+        result.x / RESULT_COORD_SCALE,
+        3,
+        result.y / RESULT_COORD_SCALE,
+      ];
 
       setTargetPosition(coords);
       setShouldAnimate(true);
