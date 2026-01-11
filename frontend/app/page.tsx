@@ -121,8 +121,11 @@ function Camera({
       const [x, y, z] = targetPosition;
 
       const distance = 14;
-      const horizontalAngle = Math.PI / 4;
       const verticalAngle = Math.PI / 6;
+
+      // If x < 0 (left side), camera should come from RIGHT (açıyı tersine çevir)
+      // If x >= 0 (right side), camera should come from LEFT (açıyı değiştirme)
+      const horizontalAngle = x < 0 ? Math.PI / 4 + Math.PI : -Math.PI / 4;
 
       const camX =
         x + distance * Math.cos(verticalAngle) * Math.cos(horizontalAngle);
@@ -305,9 +308,7 @@ export default function Home() {
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         if (error.status === 404) {
-          setErrorMessage(
-            t("errors.personNotFound").replace("{query}", query)
-          );
+          setErrorMessage(t("errors.personNotFound").replace("{query}", query));
         } else {
           setErrorMessage(t("errors.searchFailed"));
         }
