@@ -11,6 +11,7 @@ services:
   backend:
     build:
       context: ./backend
+    image: mehmetkoreken/thy-500-backend:latest
     container_name: thy500-backend
     restart: unless-stopped
     environment:
@@ -31,14 +32,15 @@ services:
   frontend:
     build:
       context: ./frontend
+    image: mehmetkoreken/thy-500-frontend:latest
     container_name: thy500-frontend
     restart: unless-stopped
     depends_on:
       - backend
     environment:
       NEXT_TELEMETRY_DISABLED: "1"
-      # Tarayıcıdan erişim için host portu kullanır
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      # Used by Next.js route handlers inside the container to reach backend
+      INTERNAL_API_BASE_URL: http://backend:8000
     ports:
       - "3001:3000"
 

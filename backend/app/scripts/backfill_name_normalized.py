@@ -1,7 +1,12 @@
 import asyncio
 import os
+import sys
 
 from motor.motor_asyncio import AsyncIOMotorClient
+
+_APP_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if _APP_ROOT not in sys.path:
+    sys.path.insert(0, _APP_ROOT)
 
 from app.utils.normalize import normalize_name
 
