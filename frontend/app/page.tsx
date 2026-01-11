@@ -21,6 +21,7 @@ import Header from "@/components/header";
 const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const INITIAL_MODEL_POSITION: [number, number, number] = [0, 0, 0];
 const RESULT_COORD_SCALE = 1000;
+const CIRCLE_RADIUS = 0.5;
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -213,7 +214,7 @@ function CircleMarker({ position }: { position: [number, number, number] }) {
 
   return (
     <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[2, 32, 32]} />
+      <sphereGeometry args={[CIRCLE_RADIUS, 32, 32]} />
       <meshBasicMaterial color="#ffffff" transparent opacity={0.6} />
     </mesh>
   );
