@@ -47,6 +47,12 @@ def build_s3_key_from_xy(x: str, y: str) -> str:
     return f"{prefix}/{base}" if prefix else base
 
 
+def build_s3_key_from_filename(filename: str) -> str:
+    file_part = _key_part(filename)
+    prefix = settings.s3_prefix.strip("/")
+    return f"{prefix}/{file_part}" if prefix else file_part
+
+
 def _client():
     access_key_id = _clean_env(settings.aws_access_key_id)
     secret_access_key = _clean_env(settings.aws_secret_access_key)

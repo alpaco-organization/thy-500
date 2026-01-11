@@ -1,7 +1,11 @@
 export type SearchType = "identity" | "fullName";
 
 export interface PersonSearchOut {
+  personId: string;
   name: string;
+  grid_filename?: string | null;
+  row?: number | null;
+  column?: number | null;
   x: number;
   y: number;
   url: string;
