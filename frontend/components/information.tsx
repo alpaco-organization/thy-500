@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Maximize, Minimize } from "lucide-react";
 import type { PersonSearchOut } from "@/lib/services/search";
 
+const GRID_COLUMNS = 14;
+const GRID_ROWS = 11;
+
 function Information({
   isVisible,
   result,
@@ -26,6 +29,27 @@ function Information({
 }) {
   const { isNavigating } = useNavigation();
   const { t } = useLanguage();
+
+  const frameStyle = (() => {
+    const row = result?.row;
+    const column = result?.column;
+    if (typeof row !== "number" || typeof column !== "number") return undefined;
+    if (row < 0 || row >= GRID_ROWS || column < 0 || column >= GRID_COLUMNS) {
+      return undefined;
+    }
+
+    const leftPct = (column / GRID_COLUMNS) * 100;
+    const topPct = (row / GRID_ROWS) * 100;
+    const widthPct = (1 / GRID_COLUMNS) * 100;
+    const heightPct = (1 / GRID_ROWS) * 100;
+
+    return {
+      left: `${leftPct}%`,
+      top: `${topPct}%`,
+      width: `${widthPct}%`,
+      height: `${heightPct}%`,
+    } as const;
+  })();
 
   return (
     <div
@@ -45,17 +69,26 @@ function Information({
           </CardTitle>
         </CardHeader>
         <CardContent className="overflow-hidden px-0">
-          <Image
-            src={result?.url || "/preview.png"}
-            alt=""
-            width={500}
-            height={500}
-            className="w-full max-w-2xs h-full object-cover object-center rounded-xl"
-            unoptimized={Boolean(result?.url)}
-            onLoadingComplete={() => {
-              if (result?.url) onPhotoLoaded?.();
-            }}
-          />
+          <div className="relative">
+            <Image
+              src={result?.url || "/preview.png"}
+              alt=""
+              width={500}
+              height={500}
+              className="w-full max-w-2xs h-full object-cover object-center rounded-xl"
+              unoptimized={Boolean(result?.url)}
+              onLoadingComplete={() => {
+                if (result?.url) onPhotoLoaded?.();
+              }}
+            />
+
+            {frameStyle && (
+              <div
+                className="pointer-events-none absolute border-3 border-white -translate-y-1"
+                style={frameStyle}
+              />
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
