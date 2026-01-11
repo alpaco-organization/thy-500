@@ -21,6 +21,7 @@ import Header from "@/components/header";
 const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const INITIAL_MODEL_POSITION: [number, number, number] = [0, 0, 0];
 const RESULT_COORD_SCALE = 1000;
+const CIRCLE_RADIUS = 0.5;
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -121,8 +122,11 @@ function Camera({
       const [x, y, z] = targetPosition;
 
       const distance = 14;
-      const horizontalAngle = Math.PI / 4;
       const verticalAngle = Math.PI / 6;
+
+      // If x < 0 (left side), camera should come from RIGHT (açıyı tersine çevir)
+      // If x >= 0 (right side), camera should come from LEFT (açıyı değiştirme)
+      const horizontalAngle = x < 0 ? Math.PI / 4 + Math.PI : -Math.PI / 4;
 
       const camX =
         x + distance * Math.cos(verticalAngle) * Math.cos(horizontalAngle);
@@ -210,7 +214,7 @@ function CircleMarker({ position }: { position: [number, number, number] }) {
 
   return (
     <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[2, 32, 32]} />
+      <sphereGeometry args={[CIRCLE_RADIUS, 32, 32]} />
       <meshBasicMaterial color="#ffffff" transparent opacity={0.6} />
     </mesh>
   );
@@ -305,9 +309,7 @@ export default function Home() {
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         if (error.status === 404) {
-          setErrorMessage(
-            t("errors.personNotFound").replace("{query}", query)
-          );
+          setErrorMessage(t("errors.personNotFound").replace("{query}", query));
         } else {
           setErrorMessage(t("errors.searchFailed"));
         }
