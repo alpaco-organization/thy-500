@@ -26,6 +26,18 @@
       "gdpr": "GDPR Agreement",
       "privacy": "Privacy Policy",
       "continue": "Continue"
+    },
+    "notFound": {
+      "subtitle": "Page Not Found",
+      "title": "404",
+      "description": "The page you're looking for doesn't exist or has been removed.",
+      "home": "Back to Home"
+    },
+    "error": {
+      "subtitle": "Something Went Wrong",
+      "title": "Error",
+      "description": "An unexpected error occurred. Please try again.",
+      "retry": "Try Again"
     }
   },
   "tr": {
@@ -52,6 +64,18 @@
       "gdpr": "KVKK Sözleşmesi'ni",
       "privacy": "Gizlilik Politikası'nı",
       "continue": "Devam Et"
+    },
+    "notFound": {
+      "subtitle": "Sayfa Bulunamadı",
+      "title": "404",
+      "description": "Aradığınız sayfa mevcut değil veya kaldırılmış olabilir.",
+      "home": "Anasayfaya Dön"
+    },
+    "error": {
+      "subtitle": "Bir Şeyler Ters Gitti",
+      "title": "Hata",
+      "description": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+      "retry": "Tekrar Deneyin"
     }
   }
 }
