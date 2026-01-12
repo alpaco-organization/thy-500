@@ -102,17 +102,16 @@ export function Search({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               disabled={isLoading || isSearchComplete}
-              className="bg-transparent border-0 shadow-non text-white placeholder:text-white/40"
+              className="bg-transparent capitalize border-0 shadow-non text-white placeholder:text-white/40"
             />
           </ItemContent>
           <ItemActions>
             {isSearchComplete && !isLoading ? (
               <Button
-                size="icon"
                 className="rounded-full"
                 onClick={handleReset}
               >
-                <RotateCcw />
+                {t("search.reset")}
               </Button>
             ) : (
               <Button
