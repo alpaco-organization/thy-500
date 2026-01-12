@@ -18,7 +18,11 @@ import {
 } from "@/lib/services/search";
 import Header from "@/components/header";
 
-const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
+const INITIAL_CAMERA_POSITION: [number, number, number] = [
+  60,
+  3.5,
+  22.7,
+];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
 const RESULT_COORD_SCALE = 1000;
 const CIRCLE_RADIUS = 0.5;
@@ -152,6 +156,17 @@ function Camera({
   ]);
 
   useFrame(() => {
+          console.log("Camera Position:", {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      });
+      console.log("Controls Target:", {
+        x: controlsRef.current.target.x,
+        y: controlsRef.current.target.y,
+        z: controlsRef.current.target.z,
+      });
+
     if (
       targetCameraPos.current &&
       targetControlsPos.current &&
