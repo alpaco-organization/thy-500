@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { Search } from "@/components/search";
 import { Splash } from "@/components/splash";
 import { Welcome } from "@/components/welcome";
+import { TestPanel } from "@/components/test-panel";
 import { useNavigation } from "@/contexts/navigation-context";
 import { useLanguage } from "@/contexts/language-context";
 import * as THREE from "three";
@@ -21,7 +22,7 @@ import Header from "@/components/header";
 const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const INITIAL_MODEL_POSITION: [number, number, number] = [0, 0, 0];
 const RESULT_COORD_SCALE = 1000;
-const CIRCLE_RADIUS = 0.5;
+const CIRCLE_RADIUS = 0.025;
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -50,12 +51,15 @@ function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   });
 }
 
-function Model({ onLoad }: { onLoad?: () => void }) {
+function Model({ onLoad, modelRef }: { onLoad?: () => void, modelRef?: React.MutableRefObject<THREE.Object3D | null> }) {
   const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
+    if (modelRef) {
+      modelRef.current = scene;
+    }
     onLoad?.();
-  }, [onLoad]);
+  }, [onLoad, modelRef, scene]);
 
   return <primitive object={scene} position={INITIAL_MODEL_POSITION} />;
 }
@@ -79,11 +83,13 @@ function Camera({
   shouldAnimate,
   isResetting,
   onAnimationComplete,
+  testPosition,
 }: {
   targetPosition: [number, number, number] | null;
   shouldAnimate: boolean;
   isResetting: boolean;
   onAnimationComplete: () => void;
+  testPosition: [number, number, number] | null;
 }) {
   const { camera } = useThree();
   const { setIsNavigating } = useNavigation();
@@ -142,6 +148,7 @@ function Camera({
     targetPosition,
     shouldAnimate,
     isResetting,
+    testPosition,
     INITIAL_CAMERA_POSITION,
     camera,
   ]);
@@ -240,8 +247,10 @@ export default function Home() {
   const [isAnimationDone, setIsAnimationDone] = useState<boolean>(false);
   const [isPhotoLoaded, setIsPhotoLoaded] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
+  const modelRef = useRef<THREE.Object3D | null>(null);
   const [isSplashReady, setIsSplashReady] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [testPosition, setTestPosition] = useState<[number, number, number] | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -299,7 +308,37 @@ export default function Home() {
       setIsPhotoLoaded(true);
       setSearchResult(result);
 
-      const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
+      const x = result.x % 5;
+      const z = result.y % 5;
+      let y: number | null = null;
+
+      // Raycaster ile y değerini bul
+      if (modelRef.current) {
+        const raycaster = new THREE.Raycaster();
+        const origin = new THREE.Vector3(x, 100, z);
+        const direction = new THREE.Vector3(0, -1, 0);
+        
+        raycaster.set(origin, direction);
+        const intersects = raycaster.intersectObject(modelRef.current, true);
+
+        if (intersects.length > 0) {
+          y = intersects[0].point.y;
+          console.log("Bulunan yüzey Y değeri:", y);
+          console.log("Tam koordinat:", { x, y, z });
+        } else {
+          console.log("Bu koordinatlarda yüzey bulunamadı");
+        }
+      }
+
+      // Y bulunamadıysa işlemi iptal et
+      if (y === null) {
+        setErrorMessage(t("errors.searchFailed"));
+        setTimeout(() => setErrorMessage(""), 5000);
+        handleReset();
+        return;
+      }
+
+      const coords: [number, number, number] = [x, y, z];
 
       setTargetPosition(coords);
       setShouldAnimate(true);
@@ -331,6 +370,40 @@ export default function Home() {
     setIsNavigating(false);
   };
 
+  const handleTest = (x: number, z: number) => {
+    if (!modelRef.current) {
+      console.error("Model henüz yüklenmedi");
+      return;
+    }
+
+    // Raycaster oluştur
+    const raycaster = new THREE.Raycaster();
+    // Yukarıdan aşağıya ışın gönder
+    const origin = new THREE.Vector3(x, 100, z); // Y ekseninde yüksekten başla
+    const direction = new THREE.Vector3(0, -1, 0); // Aşağı doğru
+    
+    raycaster.set(origin, direction);
+
+    // Model üzerindeki tüm mesh'leri bul
+    const intersects = raycaster.intersectObject(modelRef.current, true);
+
+    if (intersects.length > 0) {
+      // İlk kesişim noktası (en üstteki yüzey)
+      const point = intersects[0].point;
+      console.log("Bulunan yüzey Y değeri:", point.y);
+      console.log("Tam koordinat:", { x: point.x, y: point.y, z: point.z });
+      setTestPosition([point.x, point.y, point.z]);
+    } else {
+      console.log("Bu koordinatlarda yüzey bulunamadı");
+      // Yine de noktayı göster
+      setTestPosition([x, 0, z]);
+    }
+  };
+
+  const handleTestReset = () => {
+    setTestPosition(null);
+  };
+
   return (
     <div className="fixed w-screen h-full bg-background">
       {errorMessage && (
@@ -359,16 +432,25 @@ export default function Home() {
         isSearchComplete={isSearchComplete}
       />
 
+      <TestPanel onTest={handleTest} onReset={handleTestReset} />
+
       <Canvas
         camera={{ position: INITIAL_CAMERA_POSITION, fov: 40 }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
       >
         <ModelLights />
-        <Model onLoad={() => setIsModelLoaded(true)} />
+        <Model onLoad={() => setIsModelLoaded(true)} modelRef={modelRef} />
 
         {circleVisible && targetPosition && (
           <CircleMarker position={targetPosition} />
+        )}
+
+        {testPosition && (
+          <mesh position={testPosition}>
+            <sphereGeometry args={[0.025, 16, 16]} />
+            <meshBasicMaterial color="#00ff00" />
+          </mesh>
         )}
 
         <Camera
@@ -376,6 +458,7 @@ export default function Home() {
           shouldAnimate={shouldAnimate}
           isResetting={isResetting}
           onAnimationComplete={handleAnimationComplete}
+          testPosition={testPosition}
         />
       </Canvas>
     </div>
