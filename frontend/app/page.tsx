@@ -18,8 +18,12 @@ import {
 } from "@/lib/services/search";
 import Header from "@/components/header";
 
-const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
-const INITIAL_MODEL_POSITION: [number, number, number] = [0, 0, 0];
+const INITIAL_CAMERA_POSITION: [number, number, number] = [
+  60,
+  3.5,
+  22.7,
+];
+const CENTER_POSITION: [number, number, number] = [0, 0, 0];
 const RESULT_COORD_SCALE = 1000;
 const CIRCLE_RADIUS = 0.5;
 
@@ -54,10 +58,15 @@ function Model({ onLoad }: { onLoad?: () => void }) {
   const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
+    const box = new THREE.Box3().setFromObject(scene);
+    const center = new THREE.Vector3();
+
+    box.getCenter(center);
+    scene.position.sub(center);
     onLoad?.();
   }, [onLoad]);
 
-  return <primitive object={scene} position={INITIAL_MODEL_POSITION} />;
+  return <primitive object={scene} />;
 }
 
 function ModelLights() {
@@ -116,7 +125,7 @@ function Camera({
       } else {
         targetCameraPos.current = INITIAL_CAMERA_POSITION;
       }
-      targetControlsPos.current = INITIAL_MODEL_POSITION;
+      targetControlsPos.current = CENTER_POSITION;
       setIsAnimating(true);
     } else if (shouldAnimate && targetPosition) {
       const [x, y, z] = targetPosition;
@@ -147,6 +156,17 @@ function Camera({
   ]);
 
   useFrame(() => {
+          console.log("Camera Position:", {
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+      });
+      console.log("Controls Target:", {
+        x: controlsRef.current.target.x,
+        y: controlsRef.current.target.y,
+        z: controlsRef.current.target.z,
+      });
+
     if (
       targetCameraPos.current &&
       targetControlsPos.current &&
