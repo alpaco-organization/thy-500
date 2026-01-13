@@ -1,38 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
 export function Splash() {
   const [videoEnded, setVideoEnded] = useState<boolean>(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleEnded = () => setVideoEnded(true);
+
+    video.addEventListener("ended", handleEnded);
+
+    const safetyTimeout = setTimeout(() => {
+      setVideoEnded(true);
+    }, 12000);
+
+    return () => {
+      video.removeEventListener("ended", handleEnded);
+      clearTimeout(safetyTimeout);
+    };
+  }, []);
 
   return (
-    <dialog className="group fixed left-0 top-0 z-100 flex h-full w-full items-center justify-center bg-background data-[state=hide]:animate-out fade-out duration-1000 fill-mode-forwards">
-      {!videoEnded ? (
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-background">
+      {!videoEnded && (
         <video
+          ref={videoRef}
           src="/splash.mp4"
           autoPlay
           muted
           playsInline
-          onEnded={() => setVideoEnded(true)}
-          className="w-full h-full object-cover animate-in fade-in duration-500 group-data-[state=hide]:animate-out fade-out fill-mode-forwards"
+          preload="auto"
+          className="w-full h-full object-cover"
         />
-      ) : (
-        <div className="relative h-52 w-52 scale-75 md:scale-100">
-          <div className="absolute inset-0 rounded-full bg-white/10 animate-ping duration-1000" />
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg">
-            <Image
-              src="/logo.svg"
-              width={200}
-              height={50}
-              alt="Turkish Airlines 500th Aircraft Logo"
-              className="w-auto h-24 animate-in fade-in duration-500 group-data-[state=hide]:animate-out fade-out fill-mode-forwards"
-            />
-          </div>
+      )}
+
+      {videoEnded && (
+        <div className="relative h-52 w-52">
+          <div className="absolute inset-0 rounded-full bg-white/10 animate-ping" />
+          <Image
+            src="/logo.svg"
+            width={200}
+            height={50}
+            alt="Turkish Airlines 500th Aircraft Logo"
+            className="h-24 w-auto animate-in fade-in"
+          />
         </div>
       )}
-    </dialog>
+    </div>
   );
 }
-
-export default Splash;

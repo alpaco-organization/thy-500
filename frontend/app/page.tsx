@@ -3,6 +3,7 @@
 import { Canvas, useThree, useFrame, type RootState } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { Search } from "@/components/search";
 import { Splash } from "@/components/splash";
 import { Welcome } from "@/components/welcome";
@@ -12,20 +13,16 @@ import * as THREE from "three";
 import Information from "@/components/information";
 import {
   searchPerson,
-  ApiError,
   type PersonSearchOut,
   type SearchType,
 } from "@/lib/services/search";
 import Header from "@/components/header";
+import { Button } from "@/components/ui/button";
+import { clsx } from "clsx";
 
-const INITIAL_CAMERA_POSITION: [number, number, number] = [
-  60,
-  3.5,
-  22.7,
-];
+const INITIAL_CAMERA_POSITION: [number, number, number] = [60, 3.5, 22.7];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
-const RESULT_COORD_SCALE = 1000;
-const CIRCLE_RADIUS = 0.5;
+const MARKER_RADIUS = 0.1;
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -54,17 +51,27 @@ function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   });
 }
 
-function Model({ onLoad }: { onLoad?: () => void }) {
+function Model({
+  onLoad,
+  modelRef,
+}: {
+  onLoad?: () => void;
+  modelRef?: React.MutableRefObject<THREE.Object3D | null>;
+}) {
   const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
     const box = new THREE.Box3().setFromObject(scene);
     const center = new THREE.Vector3();
-
     box.getCenter(center);
     scene.position.sub(center);
+
+    if (modelRef) {
+      modelRef.current = scene;
+    }
+
     onLoad?.();
-  }, [onLoad]);
+  }, [onLoad, modelRef, scene]);
 
   return <primitive object={scene} />;
 }
@@ -74,7 +81,6 @@ function ModelLights() {
     <>
       <ambientLight intensity={1.2} />
       <hemisphereLight intensity={0.6} />
-
       <directionalLight position={[10, 10, 10]} intensity={1} />
       <directionalLight position={[-10, 10, 10]} intensity={0.8} />
       <directionalLight position={[10, -10, -10]} intensity={0.6} />
@@ -96,17 +102,16 @@ function Camera({
 }) {
   const { camera } = useThree();
   const { setIsNavigating } = useNavigation();
-
   const controlsRef = useRef<any>(null);
 
   const targetCameraPos = useRef<[number, number, number] | null>(null);
   const targetControlsPos = useRef<[number, number, number] | null>(null);
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const initialCameraPos = useRef<[number, number, number] | null>(null);
 
   useEffect(() => {
     setIsNavigating(isAnimating);
-  }, [isAnimating]);
+  }, [isAnimating, setIsNavigating]);
 
   useEffect(() => {
     if (!initialCameraPos.current) {
@@ -116,15 +121,12 @@ function Camera({
         camera.position.z,
       ];
     }
-  }, []);
+  }, [camera]);
 
   useEffect(() => {
     if (isResetting) {
-      if (initialCameraPos.current) {
-        targetCameraPos.current = initialCameraPos.current;
-      } else {
-        targetCameraPos.current = INITIAL_CAMERA_POSITION;
-      }
+      targetCameraPos.current =
+        initialCameraPos.current ?? INITIAL_CAMERA_POSITION;
       targetControlsPos.current = CENTER_POSITION;
       setIsAnimating(true);
     } else if (shouldAnimate && targetPosition) {
@@ -132,41 +134,20 @@ function Camera({
 
       const distance = 14;
       const verticalAngle = Math.PI / 6;
-
-      // If x < 0 (left side), camera should come from RIGHT (açıyı tersine çevir)
-      // If x >= 0 (right side), camera should come from LEFT (açıyı değiştirme)
       const horizontalAngle = x < 0 ? Math.PI / 4 + Math.PI : -Math.PI / 4;
 
-      const camX =
-        x + distance * Math.cos(verticalAngle) * Math.cos(horizontalAngle);
-      const camY = y + distance * Math.sin(verticalAngle);
-      const camZ =
-        z + distance * Math.cos(verticalAngle) * Math.sin(horizontalAngle);
+      targetCameraPos.current = [
+        x + distance * Math.cos(verticalAngle) * Math.cos(horizontalAngle),
+        y + distance * Math.sin(verticalAngle),
+        z + distance * Math.cos(verticalAngle) * Math.sin(horizontalAngle),
+      ];
 
-      targetCameraPos.current = [camX, camY, camZ];
       targetControlsPos.current = targetPosition;
       setIsAnimating(true);
     }
-  }, [
-    targetPosition,
-    shouldAnimate,
-    isResetting,
-    INITIAL_CAMERA_POSITION,
-    camera,
-  ]);
+  }, [targetPosition, shouldAnimate, isResetting]);
 
   useFrame(() => {
-          console.log("Camera Position:", {
-        x: camera.position.x,
-        y: camera.position.y,
-        z: camera.position.z,
-      });
-      console.log("Controls Target:", {
-        x: controlsRef.current.target.x,
-        y: controlsRef.current.target.y,
-        z: controlsRef.current.target.z,
-      });
-
     if (
       targetCameraPos.current &&
       targetControlsPos.current &&
@@ -174,34 +155,17 @@ function Camera({
     ) {
       const [tx, ty, tz] = targetCameraPos.current;
       const [cx, cy, cz] = targetControlsPos.current;
-      const lerpFactor = 0.05;
+      const lerp = 0.05;
 
-      camera.position.x += (tx - camera.position.x) * lerpFactor;
-      camera.position.y += (ty - camera.position.y) * lerpFactor;
-      camera.position.z += (tz - camera.position.z) * lerpFactor;
-
-      controlsRef.current.target.x +=
-        (cx - controlsRef.current.target.x) * lerpFactor;
-      controlsRef.current.target.y +=
-        (cy - controlsRef.current.target.y) * lerpFactor;
-      controlsRef.current.target.z +=
-        (cz - controlsRef.current.target.z) * lerpFactor;
-
+      camera.position.lerp(new THREE.Vector3(tx, ty, tz), lerp);
+      controlsRef.current.target.lerp(new THREE.Vector3(cx, cy, cz), lerp);
       controlsRef.current.update();
 
-      const distanceToCam = Math.sqrt(
-        Math.pow(tx - camera.position.x, 2) +
-          Math.pow(ty - camera.position.y, 2) +
-          Math.pow(tz - camera.position.z, 2)
-      );
-
-      const distanceToTarget = Math.sqrt(
-        Math.pow(cx - controlsRef.current.target.x, 2) +
-          Math.pow(cy - controlsRef.current.target.y, 2) +
-          Math.pow(cz - controlsRef.current.target.z, 2)
-      );
-
-      if (distanceToCam < 0.1 && distanceToTarget < 0.1) {
+      if (
+        camera.position.distanceTo(new THREE.Vector3(tx, ty, tz)) < 0.1 &&
+        controlsRef.current.target.distanceTo(new THREE.Vector3(cx, cy, cz)) <
+          0.1
+      ) {
         targetCameraPos.current = null;
         targetControlsPos.current = null;
         setIsAnimating(false);
@@ -216,59 +180,109 @@ function Camera({
       enableZoom
       enablePan={false}
       enabled={!isAnimating}
-      minDistance={10}
+      minDistance={0}
       maxDistance={80}
     />
   );
 }
 
-function CircleMarker({ position }: { position: [number, number, number] }) {
-  const meshRef = useRef<THREE.Mesh | null>(null);
+function Marker({ position }: { position: [number, number, number] }) {
+  const coreRef = useRef<THREE.Mesh | null>(null);
+  const rippleRef = useRef<THREE.Mesh | null>(null);
 
   useFrame((state: RootState) => {
-    if (!meshRef.current || !meshRef.current.material) return;
-    const t = state.clock.getElapsedTime();
-    const opacity = 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(t * 2));
-    (meshRef.current.material as THREE.MeshBasicMaterial).opacity = opacity;
+    const elapsed = state.clock.getElapsedTime();
+    const cycleDuration = 1.5;
+    const t = (elapsed % cycleDuration) / cycleDuration;
+
+    if (rippleRef.current) {
+      const scale = 1 + 2 * t;
+      rippleRef.current.scale.set(scale, scale, scale);
+
+      const material = rippleRef.current.material as THREE.MeshBasicMaterial;
+      material.opacity = 1 - t;
+    }
   });
 
   return (
-    <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[CIRCLE_RADIUS, 32, 32]} />
-      <meshBasicMaterial color="#ffffff" transparent opacity={0.6} />
-    </mesh>
+    <group position={position}>
+      <mesh ref={coreRef}>
+        <sphereGeometry args={[MARKER_RADIUS * 0.6, 32, 32]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+
+      <mesh ref={rippleRef}>
+        <sphereGeometry args={[MARKER_RADIUS, 32, 32]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={1}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function ViewModeSelector({
+  viewMode,
+  onViewModeChange,
+}: {
+  viewMode: "2D" | "3D";
+  onViewModeChange: (mode: "2D" | "3D") => void;
+}) {
+  const { isNavigating } = useNavigation();
+
+  return (
+    <div
+      className={clsx(
+        "fixed left-1/2 -translate-x-1/2 z-40 flex gap-1.5 top-1/6",
+        { hidden: isNavigating }
+      )}
+    >
+      {(["2D", "3D"] as const).map((mode) => (
+        <Button
+          key={mode}
+          size="sm"
+          variant={viewMode === mode ? "default" : "secondary"}
+          onClick={() => onViewModeChange(mode)}
+          className="rounded-full text-xs"
+        >
+          {mode} Görünüm
+        </Button>
+      ))}
+    </div>
   );
 }
 
 export default function Home() {
-  const { setIsNavigating } = useNavigation();
+  const { setIsNavigating, isNavigating } = useNavigation();
   const { t } = useLanguage();
 
+  const modelRef = useRef<THREE.Object3D | null>(null);
   const searchCompleteResolverRef = useRef<null | (() => void)>(null);
 
   const [targetPosition, setTargetPosition] = useState<
     [number, number, number] | null
   >(null);
-  const [shouldAnimate, setShouldAnimate] = useState<boolean>(false);
-  const [isResetting, setIsResetting] = useState<boolean>(false);
-  const [isModelLoaded, setIsModelLoaded] = useState<boolean>(false);
-  const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
-  const [circleVisible, setCircleVisible] = useState<boolean>(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isModelLoaded, setIsModelLoaded] = useState(false);
+  const [isSearchComplete, setIsSearchComplete] = useState(false);
+  const [circleVisible, setCircleVisible] = useState(false);
   const [searchResult, setSearchResult] = useState<PersonSearchOut | null>(
     null
   );
-  const [isAnimationDone, setIsAnimationDone] = useState<boolean>(false);
-  const [isPhotoLoaded, setIsPhotoLoaded] = useState<boolean>(false);
-  const [query, setQuery] = useState<string>("");
-  const [isSplashReady, setIsSplashReady] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isAnimationDone, setIsAnimationDone] = useState(false);
+  const [isPhotoLoaded, setIsPhotoLoaded] = useState(false);
+  const [query, setQuery] = useState("");
+  const [isSplashReady, setIsSplashReady] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [viewMode, setViewMode] = useState<"2D" | "3D">("3D");
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsSplashReady(true);
-    }, 5000);
-
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setIsSplashReady(true), 5000);
+    return () => clearTimeout(t);
   }, []);
 
   const handleReset = () => {
@@ -284,63 +298,13 @@ export default function Home() {
     setIsAnimationDone(false);
     setIsPhotoLoaded(false);
     setQuery("");
+    setViewMode("3D");
   };
 
   const handleAnimationComplete = () => {
     setIsResetting(false);
     setShouldAnimate(false);
     setIsAnimationDone(true);
-  };
-
-  useEffect(() => {
-    const ready = Boolean(targetPosition) && isAnimationDone && isPhotoLoaded;
-    setCircleVisible(ready);
-    setIsSearchComplete(ready);
-
-    if (ready) {
-      searchCompleteResolverRef.current?.();
-      searchCompleteResolverRef.current = null;
-    }
-  }, [targetPosition, isAnimationDone, isPhotoLoaded]);
-
-  const handleSearch = async (searchType: SearchType, query: string) => {
-    const donePromise = new Promise<void>((resolve) => {
-      searchCompleteResolverRef.current = resolve;
-    });
-
-    setIsAnimationDone(false);
-    setIsPhotoLoaded(false);
-    setCircleVisible(false);
-    setIsSearchComplete(false);
-
-    try {
-      const result = await searchPerson({ searchType, query });
-      await preloadImage(result.url);
-      setIsPhotoLoaded(true);
-      setSearchResult(result);
-
-      const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
-
-      setTargetPosition(coords);
-      setShouldAnimate(true);
-      setIsResetting(false);
-
-      await donePromise;
-    } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
-          setErrorMessage(t("errors.personNotFound").replace("{query}", query));
-        } else {
-          setErrorMessage(t("errors.searchFailed"));
-        }
-      } else if (error instanceof Error) {
-        setErrorMessage(error.message || t("errors.searchFailed"));
-      } else {
-        setErrorMessage(t("errors.unknown"));
-      }
-      setTimeout(() => setErrorMessage(""), 5000);
-      handleReset();
-    }
   };
 
   const handlePointerDown = () => {
@@ -351,6 +315,52 @@ export default function Home() {
     setIsNavigating(false);
   };
 
+  useEffect(() => {
+    const ready = Boolean(targetPosition) && isAnimationDone && isPhotoLoaded;
+    setCircleVisible(ready);
+    setIsSearchComplete(ready);
+    if (ready) searchCompleteResolverRef.current?.();
+  }, [targetPosition, isAnimationDone, isPhotoLoaded]);
+
+  const handleSearch = async (searchType: SearchType, query: string) => {
+    const donePromise = new Promise<void>((resolve) => {
+      searchCompleteResolverRef.current = resolve;
+    });
+
+    try {
+      const result = await searchPerson({ searchType, query });
+      await preloadImage(result.url);
+      setIsPhotoLoaded(true);
+      setSearchResult(result);
+
+      const x = result.x % 5;
+      const z = result.y % 5;
+      let y: number | null = null;
+
+      if (modelRef.current) {
+        const raycaster = new THREE.Raycaster();
+        raycaster.set(
+          new THREE.Vector3(x, 100, z),
+          new THREE.Vector3(0, -1, 0)
+        );
+        const hits = raycaster.intersectObject(modelRef.current, true);
+        if (hits.length) y = hits[0].point.y;
+      }
+
+      if (y === null) throw new Error("Raycast failed");
+
+      setTargetPosition([x, y, z]);
+      setShouldAnimate(true);
+      setIsResetting(false);
+
+      await donePromise;
+    } catch {
+      setErrorMessage(t("errors.searchFailed"));
+      setTimeout(() => setErrorMessage(""), 5000);
+      handleReset();
+    }
+  };
+
   return (
     <div className="fixed w-screen h-full bg-background">
       {errorMessage && (
@@ -358,7 +368,9 @@ export default function Home() {
           {errorMessage}
         </div>
       )}
+
       <Header />
+
       {isModelLoaded && isSplashReady ? (
         <Welcome onTimeout={handleReset} />
       ) : (
@@ -379,18 +391,20 @@ export default function Home() {
         isSearchComplete={isSearchComplete}
       />
 
+      {searchResult && (
+        <ViewModeSelector viewMode={viewMode} onViewModeChange={setViewMode} />
+      )}
+
       <Canvas
         camera={{ position: INITIAL_CAMERA_POSITION, fov: 40 }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
       >
         <ModelLights />
-        <Model onLoad={() => setIsModelLoaded(true)} />
-
+        <Model onLoad={() => setIsModelLoaded(true)} modelRef={modelRef} />
         {circleVisible && targetPosition && (
-          <CircleMarker position={targetPosition} />
+          <Marker position={targetPosition} />
         )}
-
         <Camera
           targetPosition={targetPosition}
           shouldAnimate={shouldAnimate}
@@ -398,6 +412,21 @@ export default function Home() {
           onAnimationComplete={handleAnimationComplete}
         />
       </Canvas>
+
+      {searchResult && viewMode === "2D" && (
+        <div
+          className="fixed bg-background inset-0 w-full h-full cursor-pointer animate-in z-30 fade-in duration-500"
+          onClick={() => setIsNavigating(!isNavigating)}
+        >
+          <Image
+            src="/left-marked.png"
+            alt="2D View"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
+      )}
     </div>
   );
 }
