@@ -126,17 +126,6 @@ function Camera({
   }, [targetPosition, shouldAnimate, isResetting, camera]);
 
   useFrame(() => {
-          console.log("Camera Position:", {
-        x: camera.position.x,
-        y: camera.position.y,
-        z: camera.position.z,
-      });
-      console.log("Controls Target:", {
-        x: controlsRef.current.target.x,
-        y: controlsRef.current.target.y,
-        z: controlsRef.current.target.z,
-      });
-
     if (
       targetCameraPos.current &&
       targetControlsPos.current &&
