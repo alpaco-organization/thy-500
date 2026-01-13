@@ -22,12 +22,14 @@ export function Welcome({ onTimeout }: WelcomeProps) {
   const { t } = useLanguage();
   const { isNavigating } = useNavigation();
 
-  const [isVisible, setIsVisible] = useState<boolean>(
-    appMode === "default" && localStorage.getItem(STORAGE_KEY) === "true"
-      ? false
-      : true
+  const isAgreementsExist =
+    Boolean(process.env.NEXT_PUBLIC_GDPR_URL) &&
+    Boolean(process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL);
+
+  const [isVisible, setIsVisible] = useState<boolean>(true);
+  const [isApproved, setIsApproved] = useState<boolean>(
+    isAgreementsExist ? false : true
   );
-  const [isApproved, setIsApproved] = useState<boolean>(false);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const lastInteractionTimeRef = useRef<number>(Date.now());
@@ -89,9 +91,9 @@ export function Welcome({ onTimeout }: WelcomeProps) {
   }, [isNavigating, isVisible, startInactivityTimer, appMode]);
 
   const handleApprove = () => {
-    if (!isApproved) return;
+    if (isAgreementsExist && !isApproved) return;
 
-    if (appMode === "default") {
+    if (isAgreementsExist && appMode === "default") {
       localStorage.setItem(STORAGE_KEY, "true");
     }
 
@@ -130,42 +132,48 @@ export function Welcome({ onTimeout }: WelcomeProps) {
         </div>
 
         <div className="flex flex-col gap-6 items-center w-full">
-          <div className="border-gradient rounded-2xl sm:rounded-full">
-            <div className="flex items-start space-x-3 bg-background/90 border backdrop-blur-lg border-gold/40 py-4 px-6 rounded-2xl sm:rounded-full max-w-xl">
-              <Checkbox
-                id="terms"
-                checked={isApproved}
-                onCheckedChange={(checked: boolean) =>
-                  setIsApproved(checked === true)
-                }
-                className="mt-1"
-              />
-              <Label
-                htmlFor="terms"
-                className="text-sm flex-wrap text-white cursor-pointer leading-relaxed"
-              >
-                {t("welcome.terms").split("{gdpr}")[0]}
-
-                <Link
-                  href="/gdpr"
-                  className="underline underline-offset-4 hover:opacity-80 transition-colors"
+          {isAgreementsExist && (
+            <div className="border-gradient rounded-2xl sm:rounded-full">
+              <div className="flex items-start space-x-3 bg-background/90 border backdrop-blur-lg border-gold/40 py-4 px-6 rounded-2xl sm:rounded-full max-w-xl">
+                <Checkbox
+                  id="terms"
+                  checked={isApproved}
+                  onCheckedChange={(checked: boolean) =>
+                    setIsApproved(checked === true)
+                  }
+                  className="mt-1"
+                />
+                <Label
+                  htmlFor="terms"
+                  className="text-sm flex-wrap text-white cursor-pointer leading-relaxed"
                 >
-                  {t("welcome.gdpr")}
-                </Link>
+                  {t("welcome.terms").split("{gdpr}")[0]}
 
-                {t("welcome.terms").split("{gdpr}")[1].split("{privacy}")[0]}
+                  <Link
+                    href={process.env.NEXT_PUBLIC_GPDR_URL || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-4 hover:opacity-80 transition-colors"
+                  >
+                    {t("welcome.gdpr")}
+                  </Link>
 
-                <Link
-                  href="/privacy"
-                  className="underline underline-offset-4 hover:opacity-80 transition-colors"
-                >
-                  {t("welcome.privacy")}
-                </Link>
+                  {t("welcome.terms").split("{gdpr}")[1].split("{privacy}")[0]}
 
-                {t("welcome.terms").split("{privacy}")[1]}
-              </Label>
+                  <Link
+                    href={process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline underline-offset-4 hover:opacity-80 transition-colors"
+                  >
+                    {t("welcome.privacy")}
+                  </Link>
+
+                  {t("welcome.terms").split("{privacy}")[1]}
+                </Label>
+              </div>
             </div>
-          </div>
+          )}
 
           <Button
             onClick={handleApprove}
@@ -173,7 +181,7 @@ export function Welcome({ onTimeout }: WelcomeProps) {
             className={clsx("rounded-full", {
               "cursor-pointer": isApproved,
             })}
-            disabled={!isApproved}
+            disabled={isAgreementsExist && !isApproved}
           >
             {t("welcome.continue")}
           </Button>
