@@ -123,7 +123,7 @@ export function Welcome({ onTimeout }: WelcomeProps) {
             {t("welcome.subtitle")}
           </h2>
 
-          <h1 className="text-5xl leading-[1.15] uppercase md:text-6xl font-semibold text-gradient text-center">
+          <h1 className="text-5xl leading-[1.15] uppercase md:text-6xl font-semibold text-gradient text-center max-w-3xl">
             {t("welcome.title")}
           </h1>
           <p className="text-lg md:text-xl font-light text-white text-center max-w-xl">
