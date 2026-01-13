@@ -156,17 +156,6 @@ function Camera({
   ]);
 
   useFrame(() => {
-          console.log("Camera Position:", {
-        x: camera.position.x,
-        y: camera.position.y,
-        z: camera.position.z,
-      });
-      console.log("Controls Target:", {
-        x: controlsRef.current.target.x,
-        y: controlsRef.current.target.y,
-        z: controlsRef.current.target.z,
-      });
-
     if (
       targetCameraPos.current &&
       targetControlsPos.current &&
@@ -385,7 +374,7 @@ export default function Home() {
         onPointerUp={handlePointerUp}
       >
         <ModelLights />
-        <Model onLoad={() => setIsModelLoaded(true)} />
+        <Model onLoad={() => {console.log("MODEL LOADED", isModelLoaded); setIsModelLoaded(true)}} />
 
         {circleVisible && targetPosition && (
           <CircleMarker position={targetPosition} />
