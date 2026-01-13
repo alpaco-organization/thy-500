@@ -24,8 +24,7 @@ const INITIAL_CAMERA_POSITION: [number, number, number] = [
   22.7,
 ];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
-const RESULT_COORD_SCALE = 1000;
-const CIRCLE_RADIUS = 0.5;
+const MARKER_RADIUS = 0.1;
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -54,7 +53,7 @@ function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   });
 }
 
-function Model({ onLoad }: { onLoad?: () => void }) {
+function Model({ onLoad, modelRef }: { onLoad?: () => void, modelRef?: React.MutableRefObject<THREE.Object3D | null> }) {
   const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
@@ -63,8 +62,11 @@ function Model({ onLoad }: { onLoad?: () => void }) {
 
     box.getCenter(center);
     scene.position.sub(center);
+    if (modelRef) {
+      modelRef.current = scene;
+    }
     onLoad?.();
-  }, [onLoad]);
+  }, [onLoad, modelRef, scene]);
 
   return <primitive object={scene} />;
 }
@@ -211,21 +213,41 @@ function Camera({
   );
 }
 
-function CircleMarker({ position }: { position: [number, number, number] }) {
-  const meshRef = useRef<THREE.Mesh | null>(null);
+function Marker({ position }: { position: [number, number, number] }) {
+  const coreRef = useRef<THREE.Mesh | null>(null);
+  const rippleRef = useRef<THREE.Mesh | null>(null);
 
   useFrame((state: RootState) => {
-    if (!meshRef.current || !meshRef.current.material) return;
-    const t = state.clock.getElapsedTime();
-    const opacity = 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(t * 2));
-    (meshRef.current.material as THREE.MeshBasicMaterial).opacity = opacity;
+    const elapsed = state.clock.getElapsedTime();
+    const cycleDuration = 1.5;
+    const t = (elapsed % cycleDuration) / cycleDuration;
+
+    if (rippleRef.current) {
+      const scale = 1 + 2 * t;
+      rippleRef.current.scale.set(scale, scale, scale);
+
+      const material = rippleRef.current.material as THREE.MeshBasicMaterial;
+      material.opacity = 1 - t;
+    }
   });
 
   return (
-    <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[CIRCLE_RADIUS, 32, 32]} />
-      <meshBasicMaterial color="#ffffff" transparent opacity={0.6} />
-    </mesh>
+    <group position={position}>
+      <mesh ref={coreRef}>
+        <sphereGeometry args={[MARKER_RADIUS * 0.6, 32, 32]} />
+        <meshBasicMaterial color="#00ff00" />
+      </mesh>
+
+      <mesh ref={rippleRef}>
+        <sphereGeometry args={[MARKER_RADIUS, 32, 32]} />
+        <meshBasicMaterial
+          color="#00ff00"
+          transparent
+          opacity={1}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+    </group>
   );
 }
 
@@ -249,6 +271,7 @@ export default function Home() {
   const [isAnimationDone, setIsAnimationDone] = useState<boolean>(false);
   const [isPhotoLoaded, setIsPhotoLoaded] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
+  const modelRef = useRef<THREE.Object3D | null>(null);
   const [isSplashReady, setIsSplashReady] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -308,7 +331,31 @@ export default function Home() {
       setIsPhotoLoaded(true);
       setSearchResult(result);
 
-      const coords: [number, number, number] = [result.x % 5, 3, result.y % 5];
+      const x = result.x % 5;
+      const z = result.y % 5;
+      let y: number | null = null;
+
+      if (modelRef.current) {
+        const raycaster = new THREE.Raycaster();
+        const origin = new THREE.Vector3(x, 100, z);
+        const direction = new THREE.Vector3(0, -1, 0);
+        
+        raycaster.set(origin, direction);
+        const intersects = raycaster.intersectObject(modelRef.current, true);
+
+        if (intersects.length > 0) {
+          y = intersects[0].point.y;
+        }
+      }
+
+      if (y === null) {
+        setErrorMessage(t("errors.searchFailed"));
+        setTimeout(() => setErrorMessage(""), 5000);
+        handleReset();
+        return;
+      }
+
+      const coords: [number, number, number] = [x, y, z];
 
       setTargetPosition(coords);
       setShouldAnimate(true);
@@ -341,7 +388,7 @@ export default function Home() {
   };
 
   return (
-    <div className="fixed w-screen h-full bg-background">
+    <div className="fixed w-screen h-full bg-sky bg-cover bg-no-repeat bg-center">
       {errorMessage && (
         <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300 text-center">
           {errorMessage}
@@ -374,10 +421,10 @@ export default function Home() {
         onPointerUp={handlePointerUp}
       >
         <ModelLights />
-        <Model onLoad={() => {console.log("MODEL LOADED", isModelLoaded); setIsModelLoaded(true)}} />
+        <Model onLoad={() => {console.log("MODEL LOADED", isModelLoaded); setIsModelLoaded(true)}} modelRef={modelRef} />
 
         {circleVisible && targetPosition && (
-          <CircleMarker position={targetPosition} />
+          <Marker position={targetPosition} />
         )}
 
         <Camera
