@@ -18,50 +18,22 @@ import { Canvas, useFrame, useThree, type RootState } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-const INITIAL_CAMERA_POSITION: [number, number, number] = [
-  60,
-  3.5,
-  22.7,
-];
+// Updated to match HTML version since model is no longer centered
+const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
-const MARKER_RADIUS = 0.025;
+const MARKER_RADIUS = 0.5;
 
-function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
-  return new Promise((resolve) => {
-    if (!url) return resolve();
-    const img = new window.Image();
-    let settled = false;
-
-    const finish = () => {
-      if (settled) return;
-      settled = true;
-      resolve();
-    };
-
-    const timeout = window.setTimeout(finish, timeoutMs);
-
-    img.onload = () => {
-      window.clearTimeout(timeout);
-      finish();
-    };
-    img.onerror = () => {
-      window.clearTimeout(timeout);
-      finish();
-    };
-
-    img.src = url;
-  });
-}
-
-function Model({ onLoad, modelRef }: { onLoad?: () => void, modelRef?: React.MutableRefObject<THREE.Object3D | null> }) {
+function Model({
+  onLoad,
+  modelRef,
+}: {
+  onLoad?: () => void;
+  modelRef?: React.MutableRefObject<THREE.Object3D | null>;
+}) {
   const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
-    const box = new THREE.Box3().setFromObject(scene);
-    const center = new THREE.Vector3();
-
-    box.getCenter(center);
-    scene.position.sub(center);
+    // No centering - use model as-is, just like HTML version
     if (modelRef) {
       modelRef.current = scene;
     }
@@ -76,7 +48,6 @@ function ModelLights() {
     <>
       <ambientLight intensity={1.2} />
       <hemisphereLight intensity={0.6} />
-
       <directionalLight position={[10, 10, 10]} intensity={1} />
       <directionalLight position={[-10, 10, 10]} intensity={0.8} />
       <directionalLight position={[10, -10, -10]} intensity={0.6} />
@@ -135,8 +106,6 @@ function Camera({
       const distance = 4;
       const verticalAngle = Math.PI / 6;
 
-      // If x < 0 (left side), camera should come from RIGHT (açıyı tersine çevir)
-      // If x >= 0 (right side), camera should come from LEFT (açıyı değiştirme)
       const horizontalAngle = x < 0 ? Math.PI / 4 + Math.PI : -Math.PI / 4;
 
       const camX =
@@ -149,13 +118,7 @@ function Camera({
       targetControlsPos.current = targetPosition;
       setIsAnimating(true);
     }
-  }, [
-    targetPosition,
-    shouldAnimate,
-    isResetting,
-    INITIAL_CAMERA_POSITION,
-    camera,
-  ]);
+  }, [targetPosition, shouldAnimate, isResetting, camera]);
 
   useFrame(() => {
     if (
@@ -327,35 +290,15 @@ export default function Home() {
 
     try {
       const result = await searchPerson({ searchType, query });
-      await preloadImage(result.url);
       setIsPhotoLoaded(true);
       setSearchResult(result);
 
+      // Use coordinates directly from API - no transformation needed
       const x = result.x;
-      const z = result.y;
-      let y: number | null = null;
+      const y = result.y;
+      const z = result.z;
 
-      if (modelRef.current) {
-        const raycaster = new THREE.Raycaster();
-        const origin = new THREE.Vector3(x, 100, z);
-        const direction = new THREE.Vector3(0, -1, 0);
-        
-        raycaster.set(origin, direction);
-        const intersects = raycaster.intersectObject(modelRef.current, true);
-
-        if (intersects.length > 0) {
-          y = intersects[0].point.y;
-        }
-      }
-
-      if (y === null) {
-        setErrorMessage(t("errors.searchFailed"));
-        setTimeout(() => setErrorMessage(""), 5000);
-        handleReset();
-        return;
-      }
-
-      console.log("FOUND Y COORDINATE:", y);
+      console.log("Coordinates from API:", x, y, z);
       const coords: [number, number, number] = [x, y, z];
 
       setTargetPosition(coords);
@@ -411,11 +354,7 @@ export default function Home() {
         <Splash />
       )}
 
-      <Information
-        isVisible={Boolean(searchResult)}
-        result={searchResult}
-        onPhotoLoaded={() => setIsPhotoLoaded(true)}
-      />
+      <Information isVisible={Boolean(searchResult)} result={searchResult} />
 
       <Search
         query={query}
@@ -431,7 +370,13 @@ export default function Home() {
         onPointerUp={handlePointerUp}
       >
         <ModelLights />
-        <Model onLoad={() => {console.log("MODEL LOADED", isModelLoaded); setIsModelLoaded(true)}} modelRef={modelRef} />
+        <Model
+          onLoad={() => {
+            console.log("MODEL LOADED");
+            setIsModelLoaded(true);
+          }}
+          modelRef={modelRef}
+        />
 
         {circleVisible && targetPosition && (
           <Marker position={targetPosition} />

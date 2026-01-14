@@ -21,11 +21,9 @@ async def _find_person(search_type: SearchType, query: str) -> PersonOut:
                 "_id": 0,
                 "personId": 1,
                 "name": 1,
-                "grid_filename": 1,
-                "row": 1,
-                "column": 1,
                 "x": 1,
                 "y": 1,
+                "z": 1,
             },
         )
     else:
@@ -37,11 +35,9 @@ async def _find_person(search_type: SearchType, query: str) -> PersonOut:
                 "_id": 0,
                 "personId": 1,
                 "name": 1,
-                "grid_filename": 1,
-                "row": 1,
-                "column": 1,
                 "x": 1,
                 "y": 1,
+                "z": 1,
             },
         )
 
@@ -90,14 +86,10 @@ async def search_person(
     query: str = Query(..., min_length=1),
 ) -> PersonSearchOut:
     person = await _find_person(searchType, query)
-    url = await _presigned_url_for_grid_filename(person.grid_filename)
     return PersonSearchOut(
         personId=person.personId,
         name=person.name,
-        grid_filename=person.grid_filename,
-        row=person.row,
-        column=person.column,
         x=person.x,
         y=person.y,
-        url=url,
+        z=person.z,
     )
