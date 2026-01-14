@@ -5,24 +5,19 @@ from pydantic import BaseModel
 
 
 class PersonOut(BaseModel):
-    personId: str
+    personId: Optional[str] = None
     name: str
-    grid_filename: Optional[str] = None
-    row: Optional[int] = None
-    column: Optional[int] = None
     x: float
     y: float
+    z: float
 
 
 class PersonSearchOut(BaseModel):
-    personId: str
+    personId: Optional[str] = None
     name: str
-    grid_filename: Optional[str] = None
-    row: Optional[int] = None
-    column: Optional[int] = None
     x: float
     y: float
-    url: str
+    z: float
 
 
 SearchType = Literal["identity", "fullName"]

@@ -29,7 +29,6 @@ app.include_router(person_router)
 @app.on_event("startup")
 async def _startup():
     db = get_db()
-    await db["persons"].create_index("personId", unique=True)
     await db["persons"].create_index("name_normalized")
 
 
