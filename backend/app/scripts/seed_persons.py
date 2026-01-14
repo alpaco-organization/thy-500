@@ -423,9 +423,9 @@ async def main() -> None:
         "personId": "00082713",
         "name": "YAHYA ÜSTÜN",
         "grid_filename": "grid_1.png",
-        "x": -2.435,
-        "y": 2.716,
-        "z": -19.845
+        "x": 1.885,
+        "y": -0.241,
+        "z": -19.386
     },
     {
         "personId": "00063968",
@@ -2423,9 +2423,9 @@ async def main() -> None:
         "personId": "00068652",
         "name": "YUSUF ZİYA İSKENDER",
         "grid_filename": "grid_1.png",
-        "x": 0.173,
-        "y": 4.247,
-        "z": -12.099
+        "x": 2.985,
+        "y": 1.543,
+        "z": -9.627
     },
     {
         "personId": "00064972",
@@ -3023,8 +3023,8 @@ async def main() -> None:
         "personId": "00061823",
         "name": "MEHMET KEREM KIZILTUNÇ",
         "grid_filename": "grid_1.png",
-        "x": 1.866,
-        "y": 3.59,
+        "x": 2.925,
+        "y": 0.974,
         "z": -15.169
     },
     {
@@ -4135,17 +4135,17 @@ async def main() -> None:
         "personId": "00058062",
         "name": "FATİH KARAMAN",
         "grid_filename": "grid_1.png",
-        "x": -2.98,
-        "y": 1.499,
-        "z": 2.856
+        "x": 2.752,
+        "y": 0.228,
+        "z": -12.246
     },
     {
         "personId": "00020128",
         "name": "MELİH ŞÜKRÜ ECERTAŞ",
         "grid_filename": "grid_1.png",
-        "x": 2.51,
-        "y": 2.938,
-        "z": -0.904
+        "x": 2.775,
+        "y": 0.318,
+        "z": -13.264
     },
     {
         "personId": "00065352",
@@ -4231,9 +4231,9 @@ async def main() -> None:
         "personId": "00048017",
         "name": "UTKU YAZAN",
         "grid_filename": "grid_1.png",
-        "x": -1.331,
-        "y": 3.957,
-        "z": -4.271
+        "x": 2.998,
+        "y": 1.163,
+        "z": -11.373
     },
     {
         "personId": "00045705",
@@ -4415,9 +4415,9 @@ async def main() -> None:
         "personId": "00117299",
         "name": "SERDAR GÜRBÜZ",
         "grid_filename": "grid_1.png",
-        "x": -3.012,
-        "y": 1.303,
-        "z": -1.067
+        "x": 2.973,
+        "y": 1.632,
+        "z": -13.409
     },
     {
         "personId": "00066788",
