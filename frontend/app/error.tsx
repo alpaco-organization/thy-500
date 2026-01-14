@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/language-context";
 import Image from "next/image";
 import { useEffect } from "react";
-import { useLanguage } from "@/contexts/language-context";
-import { Button } from "@/components/ui/button";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -25,7 +25,7 @@ export default function Error({ error, reset }: ErrorProps) {
           width={200}
           height={50}
           alt="Turkish Airlines 500th Aircraft Logo"
-          className="w-auto h-12"
+          className="w-auto h-10"
           priority
         />
 

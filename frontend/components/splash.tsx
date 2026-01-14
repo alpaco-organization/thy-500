@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 
 export function Splash() {
   const [videoEnded, setVideoEnded] = useState<boolean>(false);
@@ -26,7 +26,7 @@ export function Splash() {
               width={200}
               height={50}
               alt="Turkish Airlines 500th Aircraft Logo"
-              className="w-auto h-24 animate-in fade-in duration-500 group-data-[state=hide]:animate-out fade-out fill-mode-forwards"
+              className="w-auto h-20 animate-in fade-in duration-500 group-data-[state=hide]:animate-out fade-out fill-mode-forwards"
             />
           </div>
         </div>
