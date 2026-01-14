@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 
 function getInternalApiBaseUrl(): string {
   const base = process.env.INTERNAL_API_BASE_URL;
+  console.log("INTERNAL_API_BASE_URL:", base);
   if (!base) {
     throw new Error("INTERNAL_API_BASE_URL is not configured");
   }
