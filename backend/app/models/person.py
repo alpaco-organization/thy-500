@@ -7,9 +7,6 @@ from pydantic import BaseModel
 class PersonOut(BaseModel):
     personId: Optional[str] = None
     name: str
-    grid_filename: Optional[str] = None
-    row: Optional[int] = None
-    column: Optional[int] = None
     x: float
     y: float
     z: float
@@ -20,9 +17,6 @@ class PersonOut(BaseModel):
 class PersonSearchOut(BaseModel):
     personId: Optional[str] = None
     name: str
-    grid_filename: Optional[str] = None
-    row: Optional[int] = None
-    column: Optional[int] = None
     x: float
     y: float
     z: float

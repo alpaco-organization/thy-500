@@ -14,11 +14,8 @@ import { useEffect, useRef, useState } from "react";
 import type { IPerson, SearchType } from "@/types/person";
 import * as THREE from "three";
 
-const INITIAL_CAMERA_POSITION: [number, number, number] = [
-  60,
-  3.5,
-  22.7,
-];
+// Updated to match HTML version since model is no longer centered
+const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
 const MARKER_RADIUS = 0.5;
 
