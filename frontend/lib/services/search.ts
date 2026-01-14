@@ -40,8 +40,8 @@ export async function searchPerson(params: {
     throw new ApiError("Query is required", 400);
   }
 
-  const url = new URL("/api/search", process.env.NEXT_PUBLIC_API_BASE_URL);
-
+  const url = new URL("/api/search", window.location.origin);
+  console.log("API BASE URL:", url.toString());
   url.searchParams.set("searchType", params.searchType);
   url.searchParams.set("query", queryTrimmed);
 
