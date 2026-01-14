@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/language-context";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -16,7 +16,7 @@ export default function NotFound() {
           width={200}
           height={50}
           alt="Turkish Airlines 500th Aircraft Logo"
-          className="w-auto h-12"
+          className="w-auto h-10"
           priority
         />
 

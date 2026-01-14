@@ -1,14 +1,14 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useState, useRef, useCallback } from "react";
-import { useLanguage } from "@/contexts/language-context";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/contexts/language-context";
 import { useNavigation } from "@/contexts/navigation-context";
 import { clsx } from "clsx";
+import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "welcome_approved";
 const INACTIVITY_TIMEOUT = 30000;
@@ -114,7 +114,7 @@ export function Welcome({ onTimeout }: WelcomeProps) {
           width={200}
           height={50}
           alt="Turkish Airlines 500th Aircraft Logo"
-          className="w-auto h-16"
+          className="w-auto h-12"
           priority
         />
 
