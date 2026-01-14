@@ -1,22 +1,22 @@
 "use client";
 
-import { Canvas, useThree, useFrame, type RootState } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-import { useState, useRef, useEffect } from "react";
+import Header from "@/components/header";
+import Information from "@/components/information";
 import { Search } from "@/components/search";
 import { Splash } from "@/components/splash";
 import { Welcome } from "@/components/welcome";
-import { useNavigation } from "@/contexts/navigation-context";
 import { useLanguage } from "@/contexts/language-context";
-import * as THREE from "three";
-import Information from "@/components/information";
+import { useNavigation } from "@/contexts/navigation-context";
 import {
-  searchPerson,
   ApiError,
+  searchPerson,
   type PersonSearchOut,
   type SearchType,
 } from "@/lib/services/search";
-import Header from "@/components/header";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+import { Canvas, useFrame, useThree, type RootState } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 
 const INITIAL_CAMERA_POSITION: [number, number, number] = [
   60,
@@ -132,7 +132,7 @@ function Camera({
     } else if (shouldAnimate && targetPosition) {
       const [x, y, z] = targetPosition;
 
-      const distance = 14;
+      const distance = 4;
       const verticalAngle = Math.PI / 6;
 
       // If x < 0 (left side), camera should come from RIGHT (açıyı tersine çevir)
@@ -207,7 +207,7 @@ function Camera({
       enableZoom
       enablePan={false}
       enabled={!isAnimating}
-      minDistance={10}
+      minDistance={2}
       maxDistance={80}
     />
   );
