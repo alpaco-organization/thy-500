@@ -354,7 +354,7 @@ export default function Home() {
         <Splash />
       )}
 
-      <Information isVisible={Boolean(searchResult)} result={searchResult} />
+      <Information isVisible={Boolean(false)} result={searchResult} />
 
       <Search
         query={query}
