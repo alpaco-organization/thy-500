@@ -24,7 +24,7 @@ const INITIAL_CAMERA_POSITION: [number, number, number] = [
   22.7,
 ];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
-const MARKER_RADIUS = 0.1;
+const MARKER_RADIUS = 0.025;
 
 function preloadImage(url: string, timeoutMs = 15000): Promise<void> {
   return new Promise((resolve) => {
@@ -235,7 +235,7 @@ function Marker({ position }: { position: [number, number, number] }) {
     <group position={position}>
       <mesh ref={coreRef}>
         <sphereGeometry args={[MARKER_RADIUS * 0.6, 32, 32]} />
-        <meshBasicMaterial color="#00ff00" />
+        <meshBasicMaterial color="#00ff00" transparent opacity={0.3} />
       </mesh>
 
       <mesh ref={rippleRef}>
@@ -331,8 +331,8 @@ export default function Home() {
       setIsPhotoLoaded(true);
       setSearchResult(result);
 
-      const x = result.x % 5;
-      const z = result.y % 5;
+      const x = result.x;
+      const z = result.y;
       let y: number | null = null;
 
       if (modelRef.current) {
@@ -355,6 +355,7 @@ export default function Home() {
         return;
       }
 
+      console.log("FOUND Y COORDINATE:", y);
       const coords: [number, number, number] = [x, y, z];
 
       setTargetPosition(coords);
