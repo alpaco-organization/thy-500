@@ -12,7 +12,7 @@ venv/
 !.env.example
 !**/.env.example
 
-
+notes.md
 # Node/Next (frontend klasörü kendi .gitignore'ına da sahip)
 **/node_modules/
 **/.next/
