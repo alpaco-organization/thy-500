@@ -14,7 +14,7 @@ import {
   type SearchType,
 } from "@/lib/services/search";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { Canvas, useFrame, useThree, type RootState } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -177,38 +177,11 @@ function Camera({
 }
 
 function Marker({ position }: { position: [number, number, number] }) {
-  const coreRef = useRef<THREE.Mesh | null>(null);
-  const rippleRef = useRef<THREE.Mesh | null>(null);
-
-  useFrame((state: RootState) => {
-    const elapsed = state.clock.getElapsedTime();
-    const cycleDuration = 1.5;
-    const t = (elapsed % cycleDuration) / cycleDuration;
-
-    if (rippleRef.current) {
-      const scale = 1 + 2 * t;
-      rippleRef.current.scale.set(scale, scale, scale);
-
-      const material = rippleRef.current.material as THREE.MeshBasicMaterial;
-      material.opacity = 1 - t;
-    }
-  });
-
   return (
     <group position={position}>
-      <mesh ref={coreRef}>
+      <mesh>
         <sphereGeometry args={[MARKER_RADIUS * 0.6, 32, 32]} />
         <meshBasicMaterial color="#00ff00" transparent opacity={0.3} />
-      </mesh>
-
-      <mesh ref={rippleRef}>
-        <sphereGeometry args={[MARKER_RADIUS, 32, 32]} />
-        <meshBasicMaterial
-          color="#00ff00"
-          transparent
-          opacity={1}
-          side={THREE.DoubleSide}
-        />
       </mesh>
     </group>
   );
