@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+import { LanguageProvider } from "@/contexts/language-context";
 import { NavigationProvider } from "@/contexts/navigation-context";
+import type { Metadata } from "next";
 import { Red_Hat_Display } from 'next/font/google';
 import "./globals.css";
-import { LanguageProvider } from "@/contexts/language-context";
 
 const redHat = Red_Hat_Display({
   subsets: ['latin'],
@@ -15,6 +15,11 @@ export const metadata: Metadata = {
   description: "Türk Hava Yolları'nın 500. uçağı üzerinde yer alan binlerce fotoğraf arasından kendi fotoğrafını keşfet. Discover your photo among thousands of photos on Turkish Airlines' 500th aircraft.",
   icons: {
     icon: '/thy-500.png',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    interactiveWidget: 'resizes-content',
   },
 };
 
