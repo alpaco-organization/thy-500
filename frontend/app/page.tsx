@@ -103,7 +103,7 @@ function Camera({
     } else if (shouldAnimate && targetPosition) {
       const [x, y, z] = targetPosition;
 
-      const distance = 4;
+      const distance = 2;
       const verticalAngle = Math.PI / 6;
 
       const horizontalAngle = x < 0 ? Math.PI / 4 + Math.PI : -Math.PI / 4;

@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search as SearchIcon, Loader2, RotateCcw } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Item, ItemActions, ItemContent } from "@/components/ui/item";
-import { useNavigation } from "@/contexts/navigation-context";
 import { useLanguage } from "@/contexts/language-context";
+import { useNavigation } from "@/contexts/navigation-context";
 import clsx from "clsx";
+import { Loader2, Search as SearchIcon } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 type SearchType = "identity" | "fullName";
 
@@ -32,6 +32,7 @@ export function Search({
 
   const [searchType, setSearchType] = useState<SearchType>("fullName");
   const [isLoading, setIsLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -50,45 +51,57 @@ export function Search({
     onReset?.();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
-    <div
-      className={clsx(
-        "fixed bottom-0 bg-[#3F3F3F]/40 backdrop-blur-xl p-4 border border-b-0 border-[#535353]/80 rounded-t-3xl left-1/2 z-40 w-full md:max-w-lg flex px-4 flex-col gap-3 transition-transform duration-300 ease-in-out translate-x-[-50%]",
-        isNavigating ? "translate-y-[calc(100%+1rem)]" : "translate-y-0"
+    <>
+      {isFocused && query && (
+        <div className="fixed top-[15%] left-1/2 -translate-x-1/2 z-50 bg-[#3F3F3F]/40 backdrop-blur-xl border border-white/40 rounded-full px-6 py-2 animate-in fade-in slide-in-from-top-2 duration-300">
+          <p className="capitalize text-white text-sm font-medium">{query}</p>
+        </div>
       )}
-    >
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 justify-center">
-        <Button
-          type="button"
-          size="sm"
-          onClick={() => setSearchType("fullName")}
-          variant={searchType === "fullName" ? "default" : "secondary"}
-          className={clsx("rounded-full text-xs", {
-            "cursor-pointer": searchType !== "fullName",
-          })}
-        >
-          {t("search.fullName")}
-        </Button>
-        <p className="text-xs italic text-white">{t("search.or")}</p>
-        <Button
-          type="button"
-          size="sm"
-          onClick={() => setSearchType("identity")}
-          variant={searchType === "identity" ? "default" : "secondary"}
-          className={clsx("rounded-full text-xs", {
-            "cursor-pointer": searchType !== "identity",
-          })}
-        >
-          <Image 
-            src="/thy-logo.png" 
-            alt="THY Logo" 
-            width={50} 
-            height={50}
-            className="inline-block size-4"
-          />
-          {t("search.identityNumber")}
-        </Button>
-      </div>
+      <div
+        className={clsx(
+          "fixed bottom-0 bg-[#3F3F3F]/40 backdrop-blur-xl p-4 border border-b-0 border-[#535353]/80 rounded-t-3xl left-1/2 z-40 w-full md:max-w-lg flex px-4 flex-col gap-3 transition-transform duration-300 ease-in-out translate-x-[-50%]",
+          isNavigating ? "translate-y-[calc(100%+1rem)]" : "translate-y-0"
+        )}
+      >
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 justify-center">
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setSearchType("fullName")}
+            variant={searchType === "fullName" ? "default" : "secondary"}
+            className={clsx("rounded-full text-xs", {
+              "cursor-pointer": searchType !== "fullName",
+            })}
+          >
+            {t("search.fullName")}
+          </Button>
+          <p className="text-xs italic text-white">{t("search.or")}</p>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setSearchType("identity")}
+            variant={searchType === "identity" ? "default" : "secondary"}
+            className={clsx("rounded-full text-xs", {
+              "cursor-pointer": searchType !== "identity",
+            })}
+          >
+            <Image
+              src="/thy-logo.png"
+              alt="THY Logo"
+              width={50}
+              height={50}
+              className="inline-block size-4"
+            />
+            {t("search.identityNumber")}
+          </Button>
+        </div>
 
         <Item className="rounded-full p-1.5 border-white/40 bg-white/10">
           <ItemContent className="flex items-center gap-4 w-full">
@@ -101,16 +114,16 @@ export function Search({
               }
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               disabled={isLoading || isSearchComplete}
               className="bg-transparent capitalize border-0 shadow-non text-white placeholder:text-white/40"
             />
           </ItemContent>
           <ItemActions>
             {isSearchComplete && !isLoading ? (
-              <Button
-                className="rounded-full"
-                onClick={handleReset}
-              >
+              <Button className="rounded-full" onClick={handleReset}>
                 {t("search.reset")}
               </Button>
             ) : (
@@ -129,6 +142,7 @@ export function Search({
             )}
           </ItemActions>
         </Item>
-    </div>
+      </div>
+    </>
   );
 }
