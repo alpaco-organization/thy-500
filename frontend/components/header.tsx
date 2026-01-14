@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import { useNavigation } from "@/contexts/navigation-context";
 import { LanguageSelector } from "@/contexts/language-context";
+import { useNavigation } from "@/contexts/navigation-context";
+import Image from "next/image";
 
 function Header() {
   const { isNavigating } = useNavigation();
@@ -17,7 +17,7 @@ function Header() {
       <Image
         src="/logo.svg"
         alt="Turkish Airlines 500th Aircraft Logo"
-        className="h-12 w-auto"
+        className="h-10 w-auto"
         width={200}
         height={50}
       />
