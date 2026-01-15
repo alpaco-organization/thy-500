@@ -628,7 +628,7 @@ async def main() -> None:
         "z": -7.591
     },
     {
-        "personId": "123456789",
+        "personId": "-1",
         "name": "ARİF ALİ GEZMİŞOĞLU",
         "grid_filename": "grid_1.png",
         "x": 2.957,
@@ -700,7 +700,7 @@ async def main() -> None:
         "z": -11.301
     },
     {
-        "personId": "123456789",
+        "personId": "-2",
         "name": "FATİH VURAL SAYIN",
         "grid_filename": "grid_1.png",
         "x": 2.75,
@@ -740,7 +740,7 @@ async def main() -> None:
         "z": -18.68
     },
     {
-        "personId": "123456789",
+        "personId": "-3",
         "name": "MUSTAFA ÖZGÜREL",
         "grid_filename": "grid_1.png",
         "x": 1.649,
@@ -764,7 +764,7 @@ async def main() -> None:
         "z": -11.955
     },
     {
-        "personId": "123456789",
+        "personId": "-4",
         "name": "MUSTAFA TALHA KARAHAN",
         "grid_filename": "grid_1.png",
         "x": 1.914,
@@ -804,7 +804,7 @@ async def main() -> None:
         "z": -20.114
     },
     {
-        "personId": "123456789",
+        "personId": "-5",
         "name": "EMRE HARPUTLU",
         "grid_filename": "grid_1.png",
         "x": 2.963,
@@ -828,7 +828,7 @@ async def main() -> None:
         "z": -12.827
     },
     {
-        "personId": "123456789",
+        "personId": "-6",
         "name": "SEMİH AKBULUT",
         "grid_filename": "grid_1.png",
         "x": 3.001,
@@ -1100,7 +1100,7 @@ async def main() -> None:
         "z": -14.427
     },
     {
-        "personId": "123456789",
+        "personId": "-7",
         "name": "MEHMET ALİ GÜZEL",
         "grid_filename": "grid_1.png",
         "x": 2.801,
@@ -1132,7 +1132,7 @@ async def main() -> None:
         "z": -11.155
     },
     {
-        "personId": "123456789",
+        "personId": "-8",
         "name": "MEHMET AYKUT TUTUCU",
         "grid_filename": "grid_1.png",
         "x": 2.776,
@@ -1284,7 +1284,7 @@ async def main() -> None:
         "z": -14.79
     },
     {
-        "personId": "123456789",
+        "personId": "-9",
         "name": "ALİ EMRE YILDIRIM",
         "grid_filename": "grid_1.png",
         "x": 2.718,
@@ -1460,7 +1460,7 @@ async def main() -> None:
         "z": -14.572
     },
     {
-        "personId": "123456789",
+        "personId": "-10",
         "name": "BURAK HASAN GÜLTEMİZ",
         "grid_filename": "grid_1.png",
         "x": 2.353,
@@ -1676,7 +1676,7 @@ async def main() -> None:
         "z": -15.613
     },
     {
-        "personId": "123456789",
+        "personId": "-11",
         "name": "MUHAMMED MAHMUT ER",
         "grid_filename": "grid_1.png",
         "x": 2.694,
@@ -1876,7 +1876,7 @@ async def main() -> None:
         "z": -7.52
     },
     {
-        "personId": "123456789",
+        "personId": "-12",
         "name": "SİNANAY",
         "grid_filename": "grid_1.png",
         "x": 2.974,
@@ -1884,7 +1884,7 @@ async def main() -> None:
         "z": -11.664
     },
     {
-        "personId": "123456789",
+        "personId": "-13",
         "name": "MUHAMMED CAHİT ŞİRİN",
         "grid_filename": "grid_1.png",
         "x": 2.694,
@@ -1956,7 +1956,7 @@ async def main() -> None:
         "z": -14.922
     },
     {
-        "personId": "123456789",
+        "personId": "-14",
         "name": "MURAT YUŞAN",
         "grid_filename": "grid_1.png",
         "x": 2.949,
@@ -2084,7 +2084,7 @@ async def main() -> None:
         "z": -10.501
     },
     {
-        "personId": "123456789",
+        "personId": "-15",
         "name": "ENGİN KARACAN",
         "grid_filename": "grid_1.png",
         "x": -2.391,
@@ -2212,7 +2212,7 @@ async def main() -> None:
         "z": -19.044
     },
     {
-        "personId": "123456789",
+        "personId": "-16",
         "name": "HÜSEYİN ÇELİK",
         "grid_filename": "grid_1.png",
         "x": 2.932,
@@ -2780,7 +2780,7 @@ async def main() -> None:
         "z": -6.649
     },
     {
-        "personId": "123456789",
+        "personId": "-17",
         "name": "TAHA AKÇAKAYA",
         "grid_filename": "grid_1.png",
         "x": 2.668,
@@ -2828,7 +2828,7 @@ async def main() -> None:
         "z": -12.753
     },
     {
-        "personId": "123456789",
+        "personId": "-18",
         "name": "EMRE ÇEVİK",
         "grid_filename": "grid_1.png",
         "x": 2.627,
@@ -3044,7 +3044,7 @@ async def main() -> None:
         "z": -19.314
     },
     {
-        "personId": "123456789",
+        "personId": "-19",
         "name": "TAHA ÇAKMAK",
         "grid_filename": "grid_1.png",
         "x": 2.742,
@@ -3164,7 +3164,7 @@ async def main() -> None:
         "z": -14.922
     },
     {
-        "personId": "123456789",
+        "personId": "-20",
         "name": "UĞUR UYAN",
         "grid_filename": "grid_1.png",
         "x": 2.838,
@@ -3484,7 +3484,7 @@ async def main() -> None:
         "z": 3.835
     },
     {
-        "personId": "123456789",
+        "personId": "-21",
         "name": "YUSUF EMİN ZEREN",
         "grid_filename": "grid_1.png",
         "x": 3.0,
@@ -3716,7 +3716,7 @@ async def main() -> None:
         "z": -7.666
     },
     {
-        "personId": "123456789",
+        "personId": "-22",
         "name": "ATTİLA TURGUT DOĞUDAN",
         "grid_filename": "grid_1.png",
         "x": 3.024,
@@ -3804,7 +3804,7 @@ async def main() -> None:
         "z": -15.604
     },
     {
-        "personId": "123456789",
+        "personId": "-23",
         "name": "BURAK ŞAKACI",
         "grid_filename": "grid_1.png",
         "x": -2.979,
@@ -3964,7 +3964,7 @@ async def main() -> None:
         "z": -12.995
     },
     {
-        "personId": "123456789",
+        "personId": "-24",
         "name": "MUZAFFER KUZUBAŞOĞLU",
         "grid_filename": "grid_1.png",
         "x": 2.279,
@@ -3996,7 +3996,7 @@ async def main() -> None:
         "z": -0.321
     },
     {
-        "personId": "123456789",
+        "personId": "-25",
         "name": "SERDAR GÜLER",
         "grid_filename": "grid_1.png",
         "x": 3.013,
@@ -4036,7 +4036,7 @@ async def main() -> None:
         "z": -15.388
     },
     {
-        "personId": "123456789",
+        "personId": "-26",
         "name": "HAYRİ ÖZTURAN",
         "grid_filename": "grid_1.png",
         "x": 2.903,
@@ -4124,7 +4124,7 @@ async def main() -> None:
         "z": -10.718
     },
     {
-        "personId": "123456789",
+        "personId": "-27",
         "name": "AYHAN TOP",
         "grid_filename": "grid_1.png",
         "x": 2.941,
@@ -4308,7 +4308,7 @@ async def main() -> None:
         "z": -10.355
     },
     {
-        "personId": "123456789",
+        "personId": "-28",
         "name": "NESRİN ŞAHİN",
         "grid_filename": "grid_1.png",
         "x": 2.987,
@@ -4380,7 +4380,7 @@ async def main() -> None:
         "z": -11.518
     },
     {
-        "personId": "123456789",
+        "personId": "-29",
         "name": "NECMEDDİN SİNAN ÇITLAK",
         "grid_filename": "grid_1.png",
         "x": 2.959,
@@ -4532,7 +4532,7 @@ async def main() -> None:
         "z": -2.499
     },
     {
-        "personId": "123456789",
+        "personId": "-30",
         "name": "HAKAN BABİLA",
         "grid_filename": "grid_1.png",
         "x": 1.666,
@@ -4668,7 +4668,7 @@ async def main() -> None:
         "z": -8.539
     },
     {
-        "personId": "123456789",
+        "personId": "-31",
         "name": "HAKAN ÖZTÜRK",
         "grid_filename": "grid_1.png",
         "x": 2.771,
@@ -4964,7 +4964,7 @@ async def main() -> None:
         "z": -16.551
     },
     {
-        "personId": "123456789",
+        "personId": "-32",
         "name": "ALİ KESKİN",
         "grid_filename": "grid_1.png",
         "x": 2.823,
@@ -5252,7 +5252,7 @@ async def main() -> None:
         "z": -19.989
     },
     {
-        "personId": "123456789",
+        "personId": "-33",
         "name": "OSMAN ERHAN",
         "grid_filename": "grid_1.png",
         "x": -2.465,
@@ -5284,7 +5284,7 @@ async def main() -> None:
         "z": -13.358
     },
     {
-        "personId": "123456789",
+        "personId": "-34",
         "name": "BERK YILDIZ",
         "grid_filename": "grid_1.png",
         "x": 2.517,
@@ -5572,7 +5572,7 @@ async def main() -> None:
         "z": -7.466
     },
     {
-        "personId": "123456789",
+        "personId": "-35",
         "name": "MEHMET ZAHİD UZUNLAR",
         "grid_filename": "grid_1.png",
         "x": 2.801,
@@ -5588,7 +5588,7 @@ async def main() -> None:
         "z": -13.12
     },
     {
-        "personId": "123456789",
+        "personId": "-36",
         "name": "HALİT ERKAN CENGİZ",
         "grid_filename": "grid_1.png",
         "x": 2.845,
@@ -5908,7 +5908,7 @@ async def main() -> None:
         "z": -16.695
     },
     {
-        "personId": "123456789",
+        "personId": "-37",
         "name": "MUSTAFA AKIN TERZİOĞLU",
         "grid_filename": "grid_1.png",
         "x": -2.156,
