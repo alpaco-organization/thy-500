@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 interface NavigationContextType {
   isNavigating: boolean;
@@ -15,7 +15,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   const [isNavigating, setIsNavigating] = useState<boolean>(false);
 
   const value = { isNavigating, setIsNavigating };
-
+  
   return (
     <NavigationContext.Provider value={value}>
       {children}

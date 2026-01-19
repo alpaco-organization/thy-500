@@ -1,25 +1,46 @@
 "use client";
 
-import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-import { useState, useRef, useEffect } from "react";
+import Header from "@/components/header";
+import Information from "@/components/information";
 import { Search } from "@/components/search";
 import { Splash } from "@/components/splash";
 import { Welcome } from "@/components/welcome";
+import { useLanguage } from "@/contexts/language-context";
 import { useNavigation } from "@/contexts/navigation-context";
+import {
+  ApiError,
+  searchPerson,
+  type PersonSearchOut,
+  type SearchType,
+} from "@/lib/services/search";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import Information from "@/components/information";
 
-const INITIAL_CAMERA_POSITION: [number, number, number] = [-30, 4, 20];
+// Updated to match HTML version since model is no longer centered
+const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
+const CENTER_POSITION: [number, number, number] = [0, 0, 0];
+const MARKER_RADIUS = 0.5;
 
-function Model({ onLoad }: { onLoad?: () => void }) {
-  const { scene } = useGLTF("/modal.glb");
+function Model({
+  onLoad,
+  modelRef,
+}: {
+  onLoad?: () => void;
+  modelRef?: React.MutableRefObject<THREE.Object3D | null>;
+}) {
+  const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
+    // No centering - use model as-is, just like HTML version
+    if (modelRef) {
+      modelRef.current = scene;
+    }
     onLoad?.();
-  }, [onLoad]);
+  }, [onLoad, modelRef, scene]);
 
-  return <primitive object={scene} position={[0, 0, 10]} />;
+  return <primitive object={scene} />;
 }
 
 function ModelLights() {
@@ -27,7 +48,6 @@ function ModelLights() {
     <>
       <ambientLight intensity={1.2} />
       <hemisphereLight intensity={0.6} />
-
       <directionalLight position={[10, 10, 10]} intensity={1} />
       <directionalLight position={[-10, 10, 10]} intensity={0.8} />
       <directionalLight position={[10, -10, -10]} intensity={0.6} />
@@ -48,11 +68,18 @@ function Camera({
   onAnimationComplete: () => void;
 }) {
   const { camera } = useThree();
+  const { setIsNavigating } = useNavigation();
+
   const controlsRef = useRef<any>(null);
+
   const targetCameraPos = useRef<[number, number, number] | null>(null);
   const targetControlsPos = useRef<[number, number, number] | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const initialCameraPos = useRef<[number, number, number] | null>(null);
+
+  useEffect(() => {
+    setIsNavigating(isAnimating);
+  }, [isAnimating]);
 
   useEffect(() => {
     if (!initialCameraPos.current) {
@@ -71,14 +98,15 @@ function Camera({
       } else {
         targetCameraPos.current = INITIAL_CAMERA_POSITION;
       }
-      targetControlsPos.current = [0, 0, 10];
+      targetControlsPos.current = CENTER_POSITION;
       setIsAnimating(true);
     } else if (shouldAnimate && targetPosition) {
       const [x, y, z] = targetPosition;
 
-      const distance = 14;
-      const horizontalAngle = Math.PI / 4;
+      const distance = 2;
       const verticalAngle = Math.PI / 6;
+
+      const horizontalAngle = x < 0 ? Math.PI / 4 + Math.PI : -Math.PI / 4;
 
       const camX =
         x + distance * Math.cos(verticalAngle) * Math.cos(horizontalAngle);
@@ -90,7 +118,7 @@ function Camera({
       targetControlsPos.current = targetPosition;
       setIsAnimating(true);
     }
-  }, [targetPosition, shouldAnimate, isResetting, INITIAL_CAMERA_POSITION, camera]);
+  }, [targetPosition, shouldAnimate, isResetting, camera]);
 
   useFrame(() => {
     if (
@@ -142,36 +170,28 @@ function Camera({
       enableZoom
       enablePan={false}
       enabled={!isAnimating}
-      minDistance={8}
-      maxDistance={50}
+      minDistance={2}
+      maxDistance={80}
     />
   );
 }
 
-function CircleMarker({
-  position,
-}: {
-  position: [number, number, number];
-}) {
-  const meshRef = useRef<THREE.Mesh | null>(null);
-
-  useFrame((state) => {
-    if (!meshRef.current || !meshRef.current.material) return;
-    const t = state.clock.getElapsedTime();
-    const opacity = 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(t * 2));
-    (meshRef.current.material as THREE.MeshBasicMaterial).opacity = opacity;
-  });
-
+function Marker({ position }: { position: [number, number, number] }) {
   return (
-    <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[2, 32, 32]} />
-      <meshBasicMaterial color="#ffffff" transparent opacity={0.6} />
-    </mesh>
+    <group position={position}>
+      <mesh>
+        <sphereGeometry args={[MARKER_RADIUS * 0.6, 32, 32]} />
+        <meshBasicMaterial color="#00ff00" transparent opacity={0.3} />
+      </mesh>
+    </group>
   );
 }
 
 export default function Home() {
   const { setIsNavigating } = useNavigation();
+  const { t } = useLanguage();
+
+  const searchCompleteResolverRef = useRef<null | (() => void)>(null);
 
   const [targetPosition, setTargetPosition] = useState<
     [number, number, number] | null
@@ -181,85 +201,158 @@ export default function Home() {
   const [isModelLoaded, setIsModelLoaded] = useState<boolean>(false);
   const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
   const [circleVisible, setCircleVisible] = useState<boolean>(false);
+  const [searchResult, setSearchResult] = useState<PersonSearchOut | null>(
+    null
+  );
+  const [isAnimationDone, setIsAnimationDone] = useState<boolean>(false);
+  const [isPhotoLoaded, setIsPhotoLoaded] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
+  const modelRef = useRef<THREE.Object3D | null>(null);
+  const [isSplashReady, setIsSplashReady] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const [isUserInteracting, setIsUserInteracting] = useState<boolean>(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsSplashReady(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleReset = () => {
+    searchCompleteResolverRef.current?.();
+    searchCompleteResolverRef.current = null;
+
     setTargetPosition(null);
     setShouldAnimate(false);
     setIsResetting(true);
     setIsSearchComplete(false);
     setCircleVisible(false);
+    setSearchResult(null);
+    setIsAnimationDone(false);
+    setIsPhotoLoaded(false);
+    setQuery("");
   };
 
   const handleAnimationComplete = () => {
     setIsResetting(false);
     setShouldAnimate(false);
-    if (targetPosition) {
-      setCircleVisible(true);
-      setIsSearchComplete(true);
+    setIsAnimationDone(true);
+  };
+
+  useEffect(() => {
+    const ready = Boolean(targetPosition) && isAnimationDone && isPhotoLoaded;
+    setCircleVisible(ready);
+    setIsSearchComplete(ready);
+
+    if (ready) {
+      searchCompleteResolverRef.current?.();
+      searchCompleteResolverRef.current = null;
+    }
+  }, [targetPosition, isAnimationDone, isPhotoLoaded]);
+
+  const handleSearch = async (searchType: SearchType, query: string) => {
+    const donePromise = new Promise<void>((resolve) => {
+      searchCompleteResolverRef.current = resolve;
+    });
+
+    setIsAnimationDone(false);
+    setIsPhotoLoaded(false);
+    setCircleVisible(false);
+    setIsSearchComplete(false);
+
+    try {
+      const result = await searchPerson({ searchType, query });
+      setIsPhotoLoaded(true);
+      setSearchResult(result);
+
+      // Use coordinates directly from API - no transformation needed
+      const x = result.x;
+      const y = result.y;
+      const z = result.z;
+
+      console.log("Coordinates from API:", x, y, z);
+      const coords: [number, number, number] = [x, y, z];
+
+      setTargetPosition(coords);
+      setShouldAnimate(true);
+      setIsResetting(false);
+
+      await donePromise;
+    } catch (error: unknown) {
+      if (error instanceof ApiError) {
+        if (error.status === 404) {
+          setErrorMessage(t("errors.personNotFound").replace("{query}", query));
+        } else {
+          setErrorMessage(t("errors.searchFailed"));
+        }
+      } else if (error instanceof Error) {
+        setErrorMessage(error.message || t("errors.searchFailed"));
+      } else {
+        setErrorMessage(t("errors.unknown"));
+      }
+      setTimeout(() => setErrorMessage(""), 5000);
+      handleReset();
     }
   };
 
-  const handleSearch = async (
-    searchType: "identity" | "fullName",
-    query: string
-  ) => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    const fixedCoords: [number, number, number] = [2, 3, 5];
-
-    setTargetPosition(fixedCoords);
-    setShouldAnimate(true);
-    setIsResetting(false);
-    setCircleVisible(false);
-    setIsSearchComplete(false);
-  };
-
-  const handleWelcomeInteraction = () => {
-    setIsUserInteracting(true);
-  };
-
   const handlePointerDown = () => {
-    setIsUserInteracting(true);
     setIsNavigating(true);
   };
 
   const handlePointerUp = () => {
-    setIsUserInteracting(false);
     setIsNavigating(false);
   };
 
   return (
     <div className="fixed w-screen h-full">
-      {isModelLoaded ? (
-        <Welcome
-          isModelLoaded={isModelLoaded}
-          isUserInteracting={isUserInteracting}
-          onInteraction={handleWelcomeInteraction}
-        />
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed top-0 left-0 w-full h-full object-cover -z-10"
+      >
+        <source src="/background.mp4" type="video/mp4" />
+      </video>
+      {errorMessage && (
+        <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300 text-center">
+          {errorMessage}
+        </div>
+      )}
+      <Header />
+      {isModelLoaded && isSplashReady ? (
+        <Welcome onTimeout={handleReset} />
       ) : (
         <Splash />
       )}
 
-      <Information isSearchComplete={isSearchComplete} />
+      <Information isVisible={Boolean(false)} result={searchResult} />
 
       <Search
+        query={query}
+        setQuery={setQuery}
         onSearch={handleSearch}
         onReset={handleReset}
         isSearchComplete={isSearchComplete}
       />
 
       <Canvas
-        camera={{ position: INITIAL_CAMERA_POSITION, fov: 50 }}
+        camera={{ position: INITIAL_CAMERA_POSITION, fov: 40 }}
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
       >
         <ModelLights />
-        <Model onLoad={() => setIsModelLoaded(true)} />
+        <Model
+          onLoad={() => {
+            console.log("MODEL LOADED");
+            setIsModelLoaded(true);
+          }}
+          modelRef={modelRef}
+        />
 
         {circleVisible && targetPosition && (
-          <CircleMarker position={targetPosition} />
+          <Marker position={targetPosition} />
         )}
 
         <Camera
