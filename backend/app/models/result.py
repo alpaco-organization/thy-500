@@ -10,18 +10,10 @@ class ResultOut(BaseModel):
     matchCorrect: bool
     feedback: Optional[str] = None
     createdAt: datetime
-    updatedAt: Optional[datetime] = None
 
 
 class ResultCreate(BaseModel):
     personId: str
     personName: str
     matchCorrect: bool
-
-
-class MatchCorrectUpdate(BaseModel):
-    matchCorrect: bool
-
-
-class FeedbackUpdate(BaseModel):
-    feedback: str
+    feedback: Optional[str] = None  
