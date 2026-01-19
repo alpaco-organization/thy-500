@@ -52,6 +52,14 @@ async def main() -> None:
         "z": -18.391
     },
     {
+        "personId": "00031313",
+        "name": "HÜSEYİN BORAZAN",
+        "grid_filename": "grid_1.png",
+        "x": -1.902,
+        "y": 3.365,
+        "z": -20.208
+    },
+    {
         "personId": "00116537",
         "name": "SERHAT BÖR",
         "grid_filename": "grid_1.png",
@@ -5098,6 +5106,14 @@ async def main() -> None:
         "x": -2.925,
         "y": 1.873,
         "z": -15.554
+    },
+    {
+        "personId": "00062807",
+        "name": "selim türk",
+        "grid_filename": "grid_1.png",
+        "x": -2.777,
+        "y": 1.870,
+        "z": -18.826
     },
     {
         "personId": "00926815",

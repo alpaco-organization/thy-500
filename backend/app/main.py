@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.db.mongo import get_db, mongo
 from app.routers.person import router as person_router
+from app.routers.result import router as result_router
 
 app = FastAPI(title="thy-500-backend")
 
@@ -24,13 +25,14 @@ async def health():
 
 
 app.include_router(person_router)
+app.include_router(result_router)
 
 
 @app.on_event("startup")
 async def _startup():
     db = get_db()
     await db["persons"].create_index("name_normalized")
-
+    await db["results"].create_index("personName")
 
 @app.on_event("shutdown")
 async def _shutdown():
