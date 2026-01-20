@@ -9,38 +9,48 @@ from app.models.result import ResultOut, ResultCreate
 router = APIRouter(prefix="/api/results", tags=["results"])
 
 
-# Create new result (saves to results + updates persons)
 @router.post("/", response_model=ResultOut)
 async def create_result(result: ResultCreate):
     db = get_db()
     results_collection = db["results"]
     persons_collection = db["persons"]
-    
-    # 1. Save to results (new record every time)
+    if result.matchCorrect is not None and result.feedback is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot send both matchCorrect and feedback. Only one is allowed per request."
+        )
+    if result.matchCorrect is None and result.feedback is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Either matchCorrect or feedback must be provided"
+        )
+    # Base result data
     result_data = {
         "resultId": str(uuid.uuid4()),
         "personId": result.personId,
         "personName": result.personName,
-        "matchCorrect": result.matchCorrect,
-        "feedback": result.feedback,
         "createdAt": datetime.now()
     }
     
+    # Optional fields - only include if not None
+    optional_fields = {
+        k: v for k, v in {
+            "matchCorrect": result.matchCorrect,
+            "feedback": result.feedback
+        }.items() if v is not None
+    }
+    
+    result_data.update(optional_fields)
     await results_collection.insert_one(result_data)
     
-    # 2. Update persons (latest value)
-    await persons_collection.update_one(
-        {"personId": result.personId},
-        {
-            "$set": {
-                "matchCorrect": result.matchCorrect,
-                "feedback": result.feedback
-            }
-        }
-    )
+    # Update persons only with provided fields
+    if optional_fields:
+        await persons_collection.update_one(
+            {"personId": result.personId},
+            {"$set": optional_fields}
+        )
     
     return ResultOut(**result_data)
-
 
 # Get all results
 @router.get("/", response_model=List[ResultOut])

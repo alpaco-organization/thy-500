@@ -7,7 +7,7 @@ class ResultOut(BaseModel):
     resultId: Optional[str] = None
     personId: str
     personName: str
-    matchCorrect: bool
+    matchCorrect: Optional[bool] = None
     feedback: Optional[str] = None
     createdAt: datetime
 
@@ -15,5 +15,5 @@ class ResultOut(BaseModel):
 class ResultCreate(BaseModel):
     personId: str
     personName: str
-    matchCorrect: bool
+    matchCorrect: Optional[bool] = None
     feedback: Optional[str] = None  
