@@ -84,7 +84,7 @@ export function LanguageSelector() {
           onClick={() => changeLanguage(key)}
           variant={currentLanguage === key ? "default" : "secondary"}
           className={clsx("rounded-full text-xs", {
-            "cursor-pointer": currentLanguage !== key,
+            "cursor-default": currentLanguage === key,
           })}
         >
           {key.toUpperCase()}

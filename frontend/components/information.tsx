@@ -1,21 +1,19 @@
 import { useNavigation } from "@/contexts/navigation-context";
 import { useLanguage } from "@/contexts/language-context";
 import clsx from "clsx";
-import Image from "next/image";
 import {
   Card,
-  CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { PersonSearchOut } from "@/lib/services/search";
+import { IPerson } from "@/types/person";
 
 function Information({
   isVisible,
   result,
 }: {
   isVisible: boolean;
-  result: PersonSearchOut | null;
+  result: IPerson | null;
 }) {
   const { isNavigating } = useNavigation();
   const { t } = useLanguage();

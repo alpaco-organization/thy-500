@@ -7,18 +7,13 @@ import { Splash } from "@/components/splash";
 import { Welcome } from "@/components/welcome";
 import { useLanguage } from "@/contexts/language-context";
 import { useNavigation } from "@/contexts/navigation-context";
-import {
-  ApiError,
-  searchPerson,
-  type PersonSearchOut,
-  type SearchType,
-} from "@/lib/services/search";
+import useFetch from "@/contexts/fetch-context";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
+import type { IPerson, SearchType } from "@/types/person";
 import * as THREE from "three";
 
-// Updated to match HTML version since model is no longer centered
 const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
 const MARKER_RADIUS = 0.5;
@@ -33,7 +28,6 @@ function Model({
   const { scene } = useGLTF("/model.glb");
 
   useEffect(() => {
-    // No centering - use model as-is, just like HTML version
     if (modelRef) {
       modelRef.current = scene;
     }
@@ -146,13 +140,13 @@ function Camera({
       const distanceToCam = Math.sqrt(
         Math.pow(tx - camera.position.x, 2) +
           Math.pow(ty - camera.position.y, 2) +
-          Math.pow(tz - camera.position.z, 2)
+          Math.pow(tz - camera.position.z, 2),
       );
 
       const distanceToTarget = Math.sqrt(
         Math.pow(cx - controlsRef.current.target.x, 2) +
           Math.pow(cy - controlsRef.current.target.y, 2) +
-          Math.pow(cz - controlsRef.current.target.z, 2)
+          Math.pow(cz - controlsRef.current.target.z, 2),
       );
 
       if (distanceToCam < 0.1 && distanceToTarget < 0.1) {
@@ -187,11 +181,28 @@ function Marker({ position }: { position: [number, number, number] }) {
   );
 }
 
+function Background() {
+  return (
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="fixed top-0 left-0 w-full h-full object-cover -z-10"
+    >
+      <source src="/background.mp4" type="video/mp4" />
+    </video>
+  );
+}
+
 export default function Home() {
   const { setIsNavigating } = useNavigation();
   const { t } = useLanguage();
 
+  const { fetch: doSearch, loading } = useFetch("GET", "search");
+
   const searchCompleteResolverRef = useRef<null | (() => void)>(null);
+  const modelRef = useRef<THREE.Object3D | null>(null);
 
   const [targetPosition, setTargetPosition] = useState<
     [number, number, number] | null
@@ -201,13 +212,10 @@ export default function Home() {
   const [isModelLoaded, setIsModelLoaded] = useState<boolean>(false);
   const [isSearchComplete, setIsSearchComplete] = useState<boolean>(false);
   const [circleVisible, setCircleVisible] = useState<boolean>(false);
-  const [searchResult, setSearchResult] = useState<PersonSearchOut | null>(
-    null
-  );
+  const [searchResult, setSearchResult] = useState<IPerson | null>(null);
   const [isAnimationDone, setIsAnimationDone] = useState<boolean>(false);
-  const [isPhotoLoaded, setIsPhotoLoaded] = useState<boolean>(false);
+
   const [query, setQuery] = useState<string>("");
-  const modelRef = useRef<THREE.Object3D | null>(null);
   const [isSplashReady, setIsSplashReady] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -230,7 +238,6 @@ export default function Home() {
     setCircleVisible(false);
     setSearchResult(null);
     setIsAnimationDone(false);
-    setIsPhotoLoaded(false);
     setQuery("");
   };
 
@@ -241,7 +248,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const ready = Boolean(targetPosition) && isAnimationDone && isPhotoLoaded;
+    const ready = Boolean(targetPosition) && isAnimationDone;
+
     setCircleVisible(ready);
     setIsSearchComplete(ready);
 
@@ -249,51 +257,42 @@ export default function Home() {
       searchCompleteResolverRef.current?.();
       searchCompleteResolverRef.current = null;
     }
-  }, [targetPosition, isAnimationDone, isPhotoLoaded]);
+  }, [targetPosition, isAnimationDone]);
 
   const handleSearch = async (searchType: SearchType, query: string) => {
-    const donePromise = new Promise<void>((resolve) => {
-      searchCompleteResolverRef.current = resolve;
-    });
-
     setIsAnimationDone(false);
-    setIsPhotoLoaded(false);
     setCircleVisible(false);
     setIsSearchComplete(false);
 
-    try {
-      const result = await searchPerson({ searchType, query });
-      setIsPhotoLoaded(true);
-      setSearchResult(result);
+    await doSearch({
+      params: { searchType, query },
+      onSuccess: (result: IPerson) => {
+        setSearchResult(result);
 
-      // Use coordinates directly from API - no transformation needed
-      const x = result.x;
-      const y = result.y;
-      const z = result.z;
+        const x = result.x;
+        const y = result.y;
+        const z = result.z;
 
-      console.log("Coordinates from API:", x, y, z);
-      const coords: [number, number, number] = [x, y, z];
+        const coords: [number, number, number] = [x, y, z];
 
-      setTargetPosition(coords);
-      setShouldAnimate(true);
-      setIsResetting(false);
+        setTargetPosition(coords);
+        setShouldAnimate(true);
+        setIsResetting(false);
 
-      await donePromise;
-    } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        if (error.status === 404) {
+        searchCompleteResolverRef.current?.();
+        searchCompleteResolverRef.current = null;
+      },
+      onError: (error: string) => {
+        //TODO: Refactor error handling
+        if (error.includes("404")) {
           setErrorMessage(t("errors.personNotFound").replace("{query}", query));
         } else {
-          setErrorMessage(t("errors.searchFailed"));
+          setErrorMessage(error || t("errors.searchFailed"));
         }
-      } else if (error instanceof Error) {
-        setErrorMessage(error.message || t("errors.searchFailed"));
-      } else {
-        setErrorMessage(t("errors.unknown"));
-      }
-      setTimeout(() => setErrorMessage(""), 5000);
-      handleReset();
-    }
+        setTimeout(() => setErrorMessage(""), 5000);
+        handleReset();
+      },
+    });
   };
 
   const handlePointerDown = () => {
@@ -305,21 +304,15 @@ export default function Home() {
   };
 
   return (
-    <div className="fixed w-screen h-full">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed top-0 left-0 w-full h-full object-cover -z-10"
-      >
-        <source src="/background.mp4" type="video/mp4" />
-      </video>
+    <div className="fixed w-screen h-full bg-pattern bg-cover bg-center bg-no-repeat">
+      {/* <Background /> */}
+{/* 
       {errorMessage && (
         <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300 text-center">
           {errorMessage}
         </div>
-      )}
+      )} */}
+
       <Header />
       {isModelLoaded && isSplashReady ? (
         <Welcome onTimeout={handleReset} />
@@ -330,9 +323,10 @@ export default function Home() {
       <Information isVisible={Boolean(false)} result={searchResult} />
 
       <Search
+        loading={loading}
         query={query}
-        setQuery={setQuery}
-        onSearch={handleSearch}
+        onChange={(value) => setQuery(value)}
+        onSubmit={handleSearch}
         onReset={handleReset}
         isSearchComplete={isSearchComplete}
       />
@@ -343,13 +337,7 @@ export default function Home() {
         onPointerUp={handlePointerUp}
       >
         <ModelLights />
-        <Model
-          onLoad={() => {
-            console.log("MODEL LOADED");
-            setIsModelLoaded(true);
-          }}
-          modelRef={modelRef}
-        />
+        <Model onLoad={() => setIsModelLoaded(true)} modelRef={modelRef} />
 
         {circleVisible && targetPosition && (
           <Marker position={targetPosition} />
