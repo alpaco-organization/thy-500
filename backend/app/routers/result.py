@@ -9,7 +9,7 @@ from app.models.result import ResultOut, ResultCreate
 router = APIRouter(prefix="/api/results", tags=["results"])
 
 
-@router.post("/", response_model=ResultOut)
+@router.post("/")
 async def create_result(result: ResultCreate):
     db = get_db()
     results_collection = db["results"]
@@ -50,7 +50,7 @@ async def create_result(result: ResultCreate):
             {"$set": optional_fields}
         )
     
-    return Response(status_code=204)
+    return {}
 
 # Get all results
 @router.get("/", response_model=List[ResultOut])
