@@ -8,7 +8,8 @@ from app.routers.result import router as result_router
 
 app = FastAPI(title="thy-500-backend")
 
-allow_origins = ["*"] if settings.cors_allow_origins.strip() == "*" else [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
+# allow_origins = ["*"] if settings.cors_allow_origins.strip() == "*" else [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
+allow_origins = ["http://localhost:3001"]
 
 app.add_middleware(
     CORSMiddleware,
