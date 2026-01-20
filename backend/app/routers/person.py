@@ -80,7 +80,7 @@ async def _presigned_url_for_grid_filename(grid_filename: str | None) -> str:
     return presigned.url
 
 
-@router.get("/search", response_model=PersonSearchOut)
+@router.get("/search", response_model=PersonSearchOut, response_model_exclude_unset=True)
 async def search_person(
     searchType: SearchType = Query(..., description='"identity" or "fullName"'),
     query: str = Query(..., min_length=1),
