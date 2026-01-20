@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "welcome_approved";
-const INACTIVITY_TIMEOUT = 5000;
+const INACTIVITY_TIMEOUT = 30000;
 const appMode = process.env.NEXT_PUBLIC_APP_MODE || "default";
 
 interface WelcomeProps {
