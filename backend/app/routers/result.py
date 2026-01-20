@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from typing import List
 import uuid
 from datetime import datetime
@@ -50,7 +50,7 @@ async def create_result(result: ResultCreate):
             {"$set": optional_fields}
         )
     
-    return ResultOut(**result_data)
+    return Response(status_code=204)
 
 # Get all results
 @router.get("/", response_model=List[ResultOut])
