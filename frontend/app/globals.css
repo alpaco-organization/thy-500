@@ -41,7 +41,7 @@
 
   --font-sans: "Red Hat Display", sans-serif;
 
-  --background-image-sky: url("/sky.jpg");
+  --background-image-pattern: url("/pattern.png");
 }
 
 :root {
