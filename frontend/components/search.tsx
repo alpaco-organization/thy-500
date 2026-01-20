@@ -29,7 +29,7 @@ export function Search({
   isSearchComplete = false,
   loading = false,
 }: SearchProps) {
-  const { isNavigating, setIsNavigating } = useNavigation();
+  const { isNavigating } = useNavigation();
   const { t } = useLanguage();
 
   const [searchType, setSearchType] = useState<SearchType>("fullName");
@@ -44,6 +44,12 @@ export function Search({
   const handleReset = () => {
     onReset?.();
   };
+  
+  const handleClear = () => {
+    if (loading || isSearchComplete) return;
+
+    onChange("");
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -112,12 +118,13 @@ export function Search({
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               disabled={loading || isSearchComplete}
-              className="bg-transparent capitalize border-0 shadow-nonea text-white placeholder:text-[#5B5D6F]"
+              className="bg-transparent capitalize border-0 shadow-none text-white placeholder:text-[#5B5D6F]"
             />
             {query.trim().length > 0 && (
               <X
-                className="absolute top-1/2 right-0 -translate-y-1/2 text-white size-3.5 cursor-pointer hover:text-[#5B5D6F] transition-colors"
-                onClick={() => onChange("")}
+                data-disabled={loading || isSearchComplete}
+                className="absolute top-1/2 right-0 -translate-y-1/2 text-white size-3.5 cursor-pointer hover:text-[#5B5D6F] transition-colors data-[disabled=true]:cursor-not-allowed data-[disabled=true]:text-[#5B5D6F]"
+                onClick={handleClear}
               />
             )}
           </ItemContent>

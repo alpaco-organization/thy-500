@@ -9,7 +9,7 @@ interface IOptions<T = any> {
   onLoading?: (loading: boolean) => void;
 }
 
-const useFetch = (method: "GET" | "POST" | "PATCH", path: string) => {
+const useFetch = (method: "GET" | "POST", path: string) => {
   const { showNotification } = useNotification();
   const { currentLanguage } = useLanguage();
   
@@ -47,22 +47,18 @@ const API_BASE_URL =
             ...(method === "POST" && { "Content-Type": "application/json" }),
           },
           ...(method === "POST" && { body: JSON.stringify(params) }),
-          credentials: "include",
         },
       );
 
       const result = await response.json();
 
       if(!response.ok){
-        throw new Error((result || "An error occurred"));
+        throw new Error((result));
       }
 
-      if (response.status === 200) {
-        setData(result);
-        await onSuccess?.(result);
-      }
-
-    } catch (error: any) {
+      setData(result);
+      await onSuccess?.(result);
+    } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
         showNotification(error.message);

@@ -217,7 +217,6 @@ export default function Home() {
 
   const [query, setQuery] = useState<string>("");
   const [isSplashReady, setIsSplashReady] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -282,14 +281,7 @@ export default function Home() {
         searchCompleteResolverRef.current?.();
         searchCompleteResolverRef.current = null;
       },
-      onError: (error: string) => {
-        //TODO: Refactor error handling
-        if (error.includes("404")) {
-          setErrorMessage(t("errors.personNotFound").replace("{query}", query));
-        } else {
-          setErrorMessage(error || t("errors.searchFailed"));
-        }
-        setTimeout(() => setErrorMessage(""), 5000);
+      onError: () => {
         handleReset();
       },
     });
@@ -306,12 +298,6 @@ export default function Home() {
   return (
     <div className="fixed w-screen h-full bg-pattern bg-cover bg-center bg-no-repeat">
       {/* <Background /> */}
-{/* 
-      {errorMessage && (
-        <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-50 bg-primary/50 border border-primary backdrop-blur-lg text-white px-4 py-2 rounded-2xl animate-in fade-in text-sm slide-in-from-top-2 duration-300 text-center">
-          {errorMessage}
-        </div>
-      )} */}
 
       <Header />
       {isModelLoaded && isSplashReady ? (
@@ -320,7 +306,7 @@ export default function Home() {
         <Splash />
       )}
 
-      <Information isVisible={Boolean(false)} result={searchResult} />
+      <Information result={searchResult} />
 
       <Search
         loading={loading}
