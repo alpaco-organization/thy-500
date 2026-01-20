@@ -3,20 +3,18 @@
 import { CircleAlert } from "lucide-react";
 import { createContext, useContext, useState } from "react";
 
-interface NotificationTypes {
+interface INotification {
   message: string;
 }
 
 interface NotificationContextTypes {
-  notifications: NotificationTypes[];
+  notifications: INotification[];
   showNotification: (message: string) => void;
-  clearAllNotifications: () => void;
 }
 
 const NotificationContextDefaultValues: NotificationContextTypes = {
   notifications: [],
   showNotification: () => {},
-  clearAllNotifications: () => {},
 };
 
 const NotificationContext = createContext<NotificationContextTypes>(
@@ -28,7 +26,7 @@ export function NotificationProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [notifications, setNotifications] = useState<NotificationTypes[]>([]);
+  const [notifications, setNotifications] = useState<INotification[]>([]);
 
   const calculateTimeout = (message: string) => {
     return Math.max(message.length * 50, 5000);
@@ -45,18 +43,9 @@ export function NotificationProvider({
     }, calculateTimeout(message));
   };
 
-  const removeNotification = (index: number) => {
-    setNotifications((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const clearAllNotifications = () => {
-    setNotifications([]);
-  };
-
   const value = {
     notifications,
     showNotification,
-    clearAllNotifications,
   };
 
   return (
@@ -76,14 +65,14 @@ function Notifications() {
 
   return (
     <div className="fixed top-1/6 left-1/2 transform -translate-x-1/2 z-200 flex flex-col space-y-3">
-      {notifications.map((notification: NotificationTypes, index: number) => (
+      {notifications.map((notification: INotification, index: number) => (
         <Notification key={index} notification={notification} />
       ))}
     </div>
   );
 }
 
-function Notification({ notification }: { notification: NotificationTypes }) {
+function Notification({ notification }: { notification: INotification }) {
   return (
     <div className="bg-primary/50 border-2 rounded-full border-primary backdrop-blur-lg text-white px-4 py-2 animate-in fade-in text-sm slide-in-from-top-2 duration-300 text-center flex items-center gap-2">
       <CircleAlert className="size-4" />

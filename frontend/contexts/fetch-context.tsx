@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNotification } from "@/contexts/notification-context";
+import { useLanguage } from "@/contexts/language-context";
 
 interface IOptions<T = any> {
   params?: Record<string, any>;
@@ -9,10 +10,12 @@ interface IOptions<T = any> {
 }
 
 const useFetch = (method: "GET" | "POST" | "PATCH", path: string) => {
+  const { showNotification } = useNotification();
+  const { currentLanguage } = useLanguage();
+  
   const [data, setData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const { showNotification } = useNotification();
 
 const API_BASE_URL =
   process.env.INTERNAL_API_BASE_URL ?? "http://localhost:8000/api/";
@@ -40,6 +43,7 @@ const API_BASE_URL =
         {
           method,
           headers: {
+            "Accept-Language": currentLanguage,
             ...(method === "POST" && { "Content-Type": "application/json" }),
           },
           ...(method === "POST" && { body: JSON.stringify(params) }),
