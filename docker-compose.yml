@@ -24,6 +24,8 @@ services:
       S3_BUCKET: ${S3_BUCKET}
       S3_PREFIX: ${S3_PREFIX:-}
       PRESIGN_EXPIRES_SECONDS: ${PRESIGN_EXPIRES_SECONDS:-900}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
     depends_on:
       - mongo
     ports:
