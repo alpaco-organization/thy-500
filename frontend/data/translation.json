@@ -49,6 +49,16 @@
       "title": "Error",
       "description": "An unexpected error occurred. Please try again.",
       "retry": "Try Again"
+    },
+    "auth": {
+      "title": "Login Dashboard",
+      "description": "Enter your email and password below to login to your account.",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "m@example.com",
+      "passwordPlaceholder": "••••••••",
+      "login": "Login",
+      "loading": "Loading..."
     }
   },
   "tr": {
@@ -98,6 +108,16 @@
       "title": "Hata",
       "description": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
       "retry": "Tekrar Deneyin"
+    },
+    "auth": {
+      "title": "Giriş Paneli",
+      "description": "Hesabınıza giriş yapmak için aşağıya e-posta ve şifrenizi girin.",
+      "email": "E-posta",
+      "password": "Şifre",
+      "emailPlaceholder": "ornek@email.com",
+      "passwordPlaceholder": "••••••••",
+      "login": "Giriş Yap",
+      "loading": "Yükleniyor..."
     }
   }
 }
