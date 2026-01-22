@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.db.mongo import get_db, mongo
 from app.routers.person import router as person_router
 from app.routers.result import router as result_router
-
+from app.routers import auth
 app = FastAPI(title="thy-500-backend")
 
 # allow_origins = ["*"] if settings.cors_allow_origins.strip() == "*" else [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
@@ -27,7 +27,7 @@ async def health():
 
 app.include_router(person_router)
 app.include_router(result_router)
-
+app.include_router(auth.router)
 
 @app.on_event("startup")
 async def _startup():

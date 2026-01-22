@@ -42,6 +42,7 @@
   --font-sans: "Red Hat Display", sans-serif;
 
   --background-image-pattern: url("/pattern.png");
+  --background-image-auth: url("/auth-bg.png");
 }
 
 :root {

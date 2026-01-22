@@ -18,7 +18,7 @@ const useFetch = (method: "GET" | "POST", path: string) => {
   const [loading, setLoading] = useState<boolean>(false);
 
 const API_BASE_URL =
-  process.env.INTERNAL_API_BASE_URL ?? "http://localhost:8000/api/";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
   const doFetch = async (options: IOptions = {}) => {
     if (loading) return;
@@ -39,7 +39,7 @@ const API_BASE_URL =
       }
 
       const response = await fetch(
-        `${API_BASE_URL}${path}${method === "GET" ? parameters : ""}`,
+        `${API_BASE_URL}/api/${path}${method === "GET" ? parameters : ""}`,
         {
           method,
           headers: {
@@ -53,7 +53,7 @@ const API_BASE_URL =
       const result = await response.json();
 
       if(!response.ok){
-        throw new Error((result));
+        throw new Error((result.detail));
       }
 
       setData(result);

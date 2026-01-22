@@ -17,5 +17,10 @@ class Settings(BaseSettings):
     s3_prefix: str = ""
     presign_expires_seconds: int = 900
 
+    # JWT settings
+    jwt_secret_key: str = ""
+    jwt_algorithm: str = ""
+    access_token_expire_minutes: int = 120  # 2 hours
+
 
 settings = Settings()
