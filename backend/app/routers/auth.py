@@ -33,7 +33,7 @@ async def login(data: LoginRequest):
     return Token(access_token=access_token)
 
 
-@router.get("/verify", response_model=UserOut)
+@router.get("/verify")
 async def verify(admin: dict = Depends(get_current_admin)):
     db = get_db()
 
@@ -45,10 +45,4 @@ async def verify(admin: dict = Depends(get_current_admin)):
             detail="User not found",
         )
 
-    return UserOut(
-        userId=str(user["_id"]),
-        email=user["email"],
-        role=user["role"],
-        is_active=user["is_active"],
-        created_at=user["created_at"],
-    )
+    return {}
