@@ -19,6 +19,7 @@ import { IPerson } from "@/types/person";
 import { useEffect, useState } from "react";
 import useFetch from "@/contexts/fetch-context";
 import { Spinner } from "./ui/spinner";
+import { MessageSquare } from "lucide-react";
 
 const INFORMATION_TIMEOUT = 2000;
 
@@ -45,7 +46,13 @@ function Information({ result }: { result: IPerson | null }) {
   const [feedback, setFeedback] = useState<string>("");
 
   useEffect(() => {
-    if (!result) return;
+    if (!result) {
+      setIsVisible(false);
+      setIsDialogOpen(false);
+      setConfirmation(null);
+      setFeedback("");
+      return;
+    }
 
     const timer = setTimeout(() => {
       setIsVisible(true);
@@ -108,56 +115,32 @@ function Information({ result }: { result: IPerson | null }) {
     setIsVisible(false);
   };
 
+  const handleWantToBeFound = () => {
+    setIsDialogOpen(true);
+  };
+
   return (
     <>
       <div
         className={clsx(
-          "fixed z-50 top-0 left-1/2 max-w-md -translate-x-1/2 px-4 transition-all duration-500 w-full",
+          "fixed z-50 top-0 left-1/2 flex justify-center -translate-x-1/2 px-4 transition-all duration-500",
           {
             "-translate-y-full": isDialogOpen || isNavigating || !isVisible,
             "translate-y-4": isVisible && !isNavigating && !isDialogOpen,
           },
         )}
       >
-        <Item className="rounded-2xl p-4 border-2 border-[#41424F]/80 bg-[#1E1E24]/60 backdrop-blur-xl">
-          <ItemContent className="flex flex-col gap-6 w-full">
-            <div className="flex flex-col gap-2 items-center text-center">
-              <h3 className="text-lg md:text-lg font-medium text-gradient max-w-sm">
-                {`${t("information.question")}`}
-              </h3>
-              <p className="text-sm font-light text-white max-w-xs">
-                {t("information.instruction")}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 items-center">
-              <Button
-                type="button"
-                onClick={() => handleConfirmation(false)}
-                variant="secondary"
-                className="flex-1 rounded-full"
-              >
-                {isSending && !confirmation ? (
-                  <Spinner className="size-4" />
-                ) : (
-                  t("information.no")
-                )}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => handleConfirmation(true)}
-                variant="default"
-                className="flex-1 rounded-full"
-              >
-                {isSending && confirmation ? (
-                  <Spinner className="size-4" />
-                ) : (
-                  t("information.yes")
-                )}
-              </Button>
-            </div>
-          </ItemContent>
-        </Item>
+        <div className="bg-[#1E1E24]/80 border-2 backdrop-blur-xl border-[#41424F]/80 rounded-full p-2">
+          <Button
+            type="button"
+            onClick={handleWantToBeFound}
+            variant="default"
+            size="icon"
+            className="rounded-full w-14 h-14 animate-pulse-glow hover:animate-none hover:scale-110 transition-all duration-200"
+          >
+            <MessageSquare className="w-6 h-6" />
+          </Button>
+        </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>

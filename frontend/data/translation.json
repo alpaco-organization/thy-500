@@ -9,11 +9,6 @@
       "unknown": "An unexpected error occurred. Please try again."
     },
     "information": {
-      "title": "Congratulations! Here's Your Place in the TK Family",
-      "question": "Is this person you?",
-      "instruction": "Please select the most appropriate option below to continue.",
-      "yes": "Yes, it's me",
-      "no": "No, it's not me",
       "feedbackTitle": "Share Your Thoughts",
       "feedbackDescription": "We'd love to hear your feedback and suggestions about your experience.",
       "feedbackPlaceholder": "Write your thoughts here...",
@@ -69,11 +64,6 @@
       "unknown": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin."
     },
     "information": {
-      "title": "Tebrikler! İşte TK Aile'deki Yerin",
-      "question": "Uçak Üzerinde Gösterilen Kişi Siz Misiniz?",
-      "instruction": "Devam etmek için lütfen aşağıdaki seçeneklerden size en uygun olanı işaretleyin.",
-      "yes": "Evet, benim",
-      "no": "Hayır, ben değilim",
       "feedbackTitle": "Görüş ve Önerileriniz",
       "feedbackDescription": "Deneyiminiz hakkındaki görüş ve önerilerinizi duymak isteriz.",
       "feedbackPlaceholder": "Düşüncelerinizi buraya yazın...",
