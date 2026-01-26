@@ -5,6 +5,7 @@ from app.db.mongo import get_db
 from app.models.person import PersonOut, PersonSearchOut, SearchType
 from app.services.s3 import build_s3_key_from_filename, presign_get_object
 from app.utils.normalize import normalize_name
+from app.routers.search_history import log_search
 
 router = APIRouter(prefix="/api", tags=["person"])
 
@@ -85,11 +86,29 @@ async def search_person(
     searchType: SearchType = Query(..., description='"identity" or "fullName"'),
     query: str = Query(..., min_length=1),
 ) -> PersonSearchOut:
-    person = await _find_person(searchType, query)
-    return PersonSearchOut(
-        personId=person.personId,
-        name=person.name,
-        x=person.x,
-        y=person.y,
-        z=person.z,
-    )
+    try:
+        person = await _find_person(searchType, query)
+        # Log successful search
+        await log_search(
+            search_type=searchType,
+            query=query,
+            person_id=person.personId,
+            person_name=person.name,
+            found=True,
+        )
+        return PersonSearchOut(
+            personId=person.personId,
+            name=person.name,
+            x=person.x,
+            y=person.y,
+            z=person.z,
+        )
+    except HTTPException as e:
+        # Log failed search (person not found)
+        if e.status_code == 404:
+            await log_search(
+                search_type=searchType,
+                query=query,
+                found=False,
+            )
+        raise
