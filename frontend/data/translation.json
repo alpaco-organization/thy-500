@@ -27,7 +27,8 @@
       "identityNumber": "Staff ID",
       "fullNamePlaceholder": "Enter Full Name",
       "identityNumberPlaceholder": "Enter Staff ID",
-      "reset": "Search Again"
+      "reset": "Search Again",
+      "disclaimer": "Location data on the aircraft model is AI-generated and may contain inaccuracies."
     },
     "welcome": {
       "subtitle": "To Many Journeys Together",
@@ -86,7 +87,8 @@
       "identityNumber": "Sicil Numarası",
       "fullNamePlaceholder": "Ad Soyad Giriniz",
       "identityNumberPlaceholder": "Sicil Numarası Giriniz",
-      "reset": "Tekrar Ara"
+      "reset": "Tekrar Ara",
+      "disclaimer": "Uçak modeli üzerindeki konum verileri yapay zekâ üretimidir ve hata içerebilir."
     },
     "welcome": {
       "subtitle": "Birlikte Nice Yolculuklara",

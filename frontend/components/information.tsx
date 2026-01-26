@@ -92,6 +92,15 @@ function Information({ result }: { result: IPerson | null }) {
       },
     });
   };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsDialogOpen(open);
+
+    if (open) return;
+
+    handleCancelDialog();
+  };
+
   const handleCancelDialog = () => {
     setIsDialogOpen(false);
     setFeedback("");
@@ -151,7 +160,7 @@ function Information({ result }: { result: IPerson | null }) {
         </Item>
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
         <DialogContent className="bg-[#1E1E24]/60 backdrop-blur-xl p-4 border-2 border-[#41424F]/80 text-white rounded-2xl max-w-sm!">
           <DialogHeader>
             <DialogTitle className="font-semibold text-gradient">
