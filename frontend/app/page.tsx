@@ -139,14 +139,14 @@ function Camera({
 
       const distanceToCam = Math.sqrt(
         Math.pow(tx - camera.position.x, 2) +
-          Math.pow(ty - camera.position.y, 2) +
-          Math.pow(tz - camera.position.z, 2),
+        Math.pow(ty - camera.position.y, 2) +
+        Math.pow(tz - camera.position.z, 2),
       );
 
       const distanceToTarget = Math.sqrt(
         Math.pow(cx - controlsRef.current.target.x, 2) +
-          Math.pow(cy - controlsRef.current.target.y, 2) +
-          Math.pow(cz - controlsRef.current.target.z, 2),
+        Math.pow(cy - controlsRef.current.target.y, 2) +
+        Math.pow(cz - controlsRef.current.target.z, 2),
       );
 
       if (distanceToCam < 0.1 && distanceToTarget < 0.1) {
@@ -297,7 +297,7 @@ export default function Home() {
 
   return (
     <div className="fixed w-screen h-full bg-pattern bg-cover bg-center bg-no-repeat">
-      {/* <Background /> */}
+      <Background />
 
       <Header />
       {isModelLoaded && isSplashReady ? (
