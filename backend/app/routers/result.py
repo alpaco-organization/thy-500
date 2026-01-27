@@ -62,7 +62,7 @@ async def get_all_results(page: int = 0, search: Optional[str] = None):
     total = await collection.count_documents(query)
     total_pages = (total + page_size - 1) // page_size
 
-    cursor = collection.find(query, projection={"_id": 0}).skip(skip).limit(page_size)
+    cursor = collection.find(query, projection={"_id": 0}).sort("createdAt", -1).skip(skip).limit(page_size)
     results = await cursor.to_list(length=page_size)
 
     return {
