@@ -18,6 +18,8 @@ const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
 const MARKER_RADIUS = 0.5;
 
+useGLTF.setDecoderPath("/draco/");
+
 function Model({
   onLoad,
   modelRef,
@@ -25,7 +27,12 @@ function Model({
   onLoad?: () => void;
   modelRef?: React.MutableRefObject<THREE.Object3D | null>;
 }) {
-  const { scene } = useGLTF("/model.glb");
+  const modelPath =
+    process.env.NEXT_PUBLIC_APP_MODE === "default"
+      ? "/web_model.glb"
+      : "/kiosk_model.glb";
+
+  const { scene } = useGLTF(modelPath);
 
   useEffect(() => {
     if (modelRef) {
@@ -139,14 +146,14 @@ function Camera({
 
       const distanceToCam = Math.sqrt(
         Math.pow(tx - camera.position.x, 2) +
-        Math.pow(ty - camera.position.y, 2) +
-        Math.pow(tz - camera.position.z, 2),
+          Math.pow(ty - camera.position.y, 2) +
+          Math.pow(tz - camera.position.z, 2),
       );
 
       const distanceToTarget = Math.sqrt(
         Math.pow(cx - controlsRef.current.target.x, 2) +
-        Math.pow(cy - controlsRef.current.target.y, 2) +
-        Math.pow(cz - controlsRef.current.target.z, 2),
+          Math.pow(cy - controlsRef.current.target.y, 2) +
+          Math.pow(cz - controlsRef.current.target.z, 2),
       );
 
       if (distanceToCam < 0.1 && distanceToTarget < 0.1) {
