@@ -6,11 +6,11 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import useFetch from "@/contexts/fetch-context";
-import { useLanguage, LanguageSelector } from "@/contexts/language-context";
+import { useLanguage } from "@/contexts/language-context";
 
 function Auth() {
-  const [email, setEmail] = useState<string>("admin@alpaco.com");
-  const [password, setPassword] = useState<string>("alpacothy500");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { fetch: loginFetch } = useFetch("POST", "auth/login");
@@ -31,6 +31,8 @@ function Auth() {
       },
       onError: () => {
         setIsLoading(false);
+        setEmail("");
+        setPassword("");
       },
     });
   };

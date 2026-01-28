@@ -22,7 +22,9 @@ import { clsx } from "clsx";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  Loader,
   Loader2,
+  LoaderCircle,
   MessageSquareX,
   Search,
   X,
@@ -140,7 +142,12 @@ function Dashboard() {
   return (
     <>
       <div className="fixed top-4 left-4 z-50">
-        <Button size="sm" variant="secondary" onClick={handleLogout} className="rounded-full text-xs">
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={handleLogout}
+          className="rounded-full text-xs"
+        >
           {t("auth.logout")}
         </Button>
       </div>
@@ -185,19 +192,8 @@ function Dashboard() {
 
         <div className="w-full h-full flex justify-center items-center gap-1 overflow-auto">
           {loading ? (
-            <div className="w-full mb-auto flex flex-col rounded-2xl border-2 border-[#41424F]/80 bg-[#1E1E24]/60 backdrop-blur-xl">
-              <ItemGroup>
-                {[0, 1, 2, 3, 4].map((_, index) => (
-                  <div key={index}>
-                    {index > 0 && (
-                      <ItemSeparator className="h-2 bg-[#41424F]/50" />
-                    )}
-                    <Item className="p-4 gap-3 animate-pulse hover:bg-[#41424F]/20 transition-colors">
-                      <ItemContent></ItemContent>
-                    </Item>
-                  </div>
-                ))}
-              </ItemGroup>
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <LoaderCircle className="size-12 text-[#41424F] animate-spin duration-1000" />
             </div>
           ) : feedbacks.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 gap-3">
