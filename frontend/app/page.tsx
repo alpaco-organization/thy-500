@@ -18,6 +18,8 @@ const INITIAL_CAMERA_POSITION: [number, number, number] = [54, 8, 33];
 const CENTER_POSITION: [number, number, number] = [0, 0, 0];
 const MARKER_RADIUS = 0.5;
 
+useGLTF.setDecoderPath("/draco/");
+
 function Model({
   onLoad,
   modelRef,
@@ -25,7 +27,12 @@ function Model({
   onLoad?: () => void;
   modelRef?: React.MutableRefObject<THREE.Object3D | null>;
 }) {
-  const { scene } = useGLTF("/model.glb");
+  const modelPath =
+    process.env.NEXT_PUBLIC_APP_MODE === "default"
+      ? "/web_model.glb"
+      : "/kiosk_model.glb";
+
+  const { scene } = useGLTF(modelPath);
 
   useEffect(() => {
     if (modelRef) {
