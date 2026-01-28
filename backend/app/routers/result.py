@@ -54,7 +54,7 @@ async def get_all_results(page: int = 0, search: Optional[str] = None):
         search_upper = unicodedata.normalize("NFD", search_upper)
         query = {
             "$or": [
-                {"personId": {"$regex": search_upper}},
+                {"personId": {"$regex": search}},
                 {"personName": {"$regex": search_upper}}
             ]
         }
