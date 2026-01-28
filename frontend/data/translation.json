@@ -54,7 +54,20 @@
       "emailPlaceholder": "m@example.com",
       "passwordPlaceholder": "••••••••",
       "login": "Login",
-      "loading": "Loading..."
+      "logout": "Logout"
+    },
+    "dashboard": {
+      "title": "Feedbacks",
+      "searchPlaceholder": "Search by Name or Staff ID...",
+      "noResults": "No feedback found.",
+      "loading": "Loading feedbacks...",
+      "matchCorrect": "Match Correct",
+      "matchIncorrect": "Match Incorrect",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page",
+      "of": "of",
+      "feedbacks": "Feedbacks"
     }
   },
   "tr": {
@@ -109,7 +122,20 @@
       "emailPlaceholder": "ornek@email.com",
       "passwordPlaceholder": "••••••••",
       "login": "Giriş Yap",
-      "loading": "Yükleniyor..."
+      "logout": "Çıkış Yap"
+    },
+    "dashboard": {
+      "title": "Geri Bildirimler",
+      "searchPlaceholder": "İsim veya Sicil Numarası ile Ara...",
+      "noResults": "Geri bildirim bulunamadı.",
+      "loading": "Geri bildirimler yükleniyor...",
+      "matchCorrect": "Eşleşme Doğru",
+      "matchIncorrect": "Eşleşme Yanlış",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "page": "Sayfa",
+      "of": "/",
+      "feedbacks": "Geri Bildirim"
     }
   }
 }

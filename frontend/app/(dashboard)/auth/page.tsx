@@ -37,12 +37,9 @@ function Auth() {
 
   return (
     <article className="relative">
-      <div className="fixed top-4 right-4 z-50">
-        <LanguageSelector />
-      </div>
       <FieldGroup className="flex flex-col gap-6 w-xs">
         <div className="flex flex-col items-center gap-2 text-center w-full">
-          <h3 className="text-xl font-medium text-gradient max-w-sm">
+          <h3 className="text-2xl font-medium text-gradient max-w-sm">
             {t("auth.title")}
           </h3>
           <p className="text-sm font-light text-white max-w-3xs">
@@ -84,14 +81,7 @@ function Auth() {
             disabled={isDisabled}
             onClick={handleAuth}
           >
-            {isLoading ? (
-              <>
-                <Spinner className="mr-2" />
-                {t("auth.loading")}
-              </>
-            ) : (
-              t("auth.login")
-            )}
+            {isLoading ? <Spinner /> : t("auth.login")}
           </Button>
         </Field>
       </FieldGroup>

@@ -18,11 +18,6 @@ export const metadata: Metadata = {
   icons: {
     icon: "/thy-logo.png",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    interactiveWidget: "resizes-content",
-  },
 };
 
 export default function RootLayout({
