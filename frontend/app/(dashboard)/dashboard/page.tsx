@@ -127,11 +127,13 @@ function Dashboard() {
   }, [router]);
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(new Date(dateString).getTime() + 3 * 60 * 60 * 1000);
     return date.toLocaleDateString("tr-TR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
