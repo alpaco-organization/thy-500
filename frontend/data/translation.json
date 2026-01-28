@@ -1,8 +1,5 @@
 {
   "en": {
-    "common": {
-      "or": "or"
-    },
     "errors": {
       "personNotFound": "No such person found: \"{query}\". Please try another search.",
       "searchFailed": "An error occurred during search. Please try again.",
@@ -51,10 +48,22 @@
       "description": "Enter your email and password below to login to your account.",
       "email": "Email",
       "password": "Password",
-      "emailPlaceholder": "m@example.com",
-      "passwordPlaceholder": "••••••••",
+      "emailPlaceholder": "Enter Email",
+      "passwordPlaceholder": "Enter Password",
       "login": "Login",
-      "loading": "Loading..."
+      "logout": "Logout"
+    },
+    "dashboard": {
+      "title": "Feedbacks",
+      "searchPlaceholder": "Search by Name or Staff ID...",
+      "noResults": "No feedback found.",
+      "loading": "Loading feedbacks...",
+      "matchCorrect": "Match Correct",
+      "matchIncorrect": "Match Incorrect",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page",
+      "feedbacks": "Feedbacks"
     }
   },
   "tr": {
@@ -106,10 +115,22 @@
       "description": "Hesabınıza giriş yapmak için aşağıya e-posta ve şifrenizi girin.",
       "email": "E-posta",
       "password": "Şifre",
-      "emailPlaceholder": "ornek@email.com",
-      "passwordPlaceholder": "••••••••",
+      "emailPlaceholder": "E Posta Giriniz",
+      "passwordPlaceholder": "Parola Giriniz",
       "login": "Giriş Yap",
-      "loading": "Yükleniyor..."
+      "logout": "Çıkış Yap"
+    },
+    "dashboard": {
+      "title": "Geri Bildirimler",
+      "searchPlaceholder": "İsim veya Sicil Numarası ile Ara...",
+      "noResults": "Geri bildirim bulunamadı.",
+      "loading": "Geri bildirimler yükleniyor...",
+      "matchCorrect": "Eşleşme Doğru",
+      "matchIncorrect": "Eşleşme Yanlış",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "page": "Sayfa",
+      "feedbacks": "Geri Bildirim"
     }
   }
 }

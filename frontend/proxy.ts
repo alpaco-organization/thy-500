@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://thy500-backend:8000";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 const TOKEN_COOKIE = "token";
 
@@ -39,7 +39,10 @@ export async function proxy(request: NextRequest) {
       cache: "no-store",
     });
 
-    if (!response.ok) return redirectToAuth(request);
+    if (!response.ok) {
+      console.log(await response.json());
+      return redirectToAuth(request);
+    }
 
     const userData = await response.json();
 

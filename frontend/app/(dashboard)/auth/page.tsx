@@ -6,11 +6,11 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import useFetch from "@/contexts/fetch-context";
-import { useLanguage, LanguageSelector } from "@/contexts/language-context";
+import { useLanguage } from "@/contexts/language-context";
 
 function Auth() {
-  const [email, setEmail] = useState<string>("admin@alpaco.com");
-  const [password, setPassword] = useState<string>("alpacothy500");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { fetch: loginFetch } = useFetch("POST", "auth/login");
@@ -31,18 +31,17 @@ function Auth() {
       },
       onError: () => {
         setIsLoading(false);
+        setEmail("");
+        setPassword("");
       },
     });
   };
 
   return (
     <article className="relative">
-      <div className="fixed top-4 right-4 z-50">
-        <LanguageSelector />
-      </div>
       <FieldGroup className="flex flex-col gap-6 w-xs">
         <div className="flex flex-col items-center gap-2 text-center w-full">
-          <h3 className="text-xl font-medium text-gradient max-w-sm">
+          <h3 className="text-2xl font-medium text-gradient max-w-sm">
             {t("auth.title")}
           </h3>
           <p className="text-sm font-light text-white max-w-3xs">
@@ -84,14 +83,7 @@ function Auth() {
             disabled={isDisabled}
             onClick={handleAuth}
           >
-            {isLoading ? (
-              <>
-                <Spinner className="mr-2" />
-                {t("auth.loading")}
-              </>
-            ) : (
-              t("auth.login")
-            )}
+            {isLoading ? <Spinner /> : t("auth.login")}
           </Button>
         </Field>
       </FieldGroup>

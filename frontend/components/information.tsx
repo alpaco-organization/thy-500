@@ -5,7 +5,6 @@ import { useLanguage } from "@/contexts/language-context";
 import { useNotification } from "@/contexts/notification-context";
 import clsx from "clsx";
 import { Button } from "@/components/ui/button";
-import { Item, ItemContent } from "@/components/ui/item";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +18,7 @@ import { IPerson } from "@/types/person";
 import { useEffect, useState } from "react";
 import useFetch from "@/contexts/fetch-context";
 import { Spinner } from "./ui/spinner";
-import { MessageSquare } from "lucide-react";
+import { MessageSquareText } from "lucide-react";
 
 const INFORMATION_TIMEOUT = 2000;
 
@@ -42,14 +41,12 @@ function Information({ result }: { result: IPerson | null }) {
 
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [confirmation, setConfirmation] = useState<boolean | null>(null);
   const [feedback, setFeedback] = useState<string>("");
 
   useEffect(() => {
     if (!result) {
       setIsVisible(false);
       setIsDialogOpen(false);
-      setConfirmation(null);
       setFeedback("");
       return;
     }
@@ -60,23 +57,6 @@ function Information({ result }: { result: IPerson | null }) {
 
     return () => clearTimeout(timer);
   }, [result]);
-
-  const handleConfirmation = async (isConfirmed: boolean) => {
-    if (!result) return;
-
-    setConfirmation(isConfirmed);
-
-    const confirmationData: IConfirmationOrFeedback = {
-      personId: result.personId || "",
-      personName: result.name || "",
-      matchCorrect: isConfirmed,
-    };
-
-    await sendUserConfirmOrFeedback({
-      params: confirmationData,
-      onSuccess: () => setIsDialogOpen(true),
-    });
-  };
 
   const handleSubmitFeedback = async () => {
     if (!result || feedback.trim() === "") return;
@@ -92,7 +72,6 @@ function Information({ result }: { result: IPerson | null }) {
       onSuccess: () => {
         setIsDialogOpen(false);
         setIsVisible(false);
-        setConfirmation(null);
         setFeedback("");
 
         showNotification(t("information.thankYouFeedback"), "success");
@@ -111,7 +90,6 @@ function Information({ result }: { result: IPerson | null }) {
   const handleCancelDialog = () => {
     setIsDialogOpen(false);
     setFeedback("");
-    setConfirmation(null);
     setIsVisible(false);
   };
 
@@ -138,7 +116,7 @@ function Information({ result }: { result: IPerson | null }) {
             size="icon"
             className="rounded-full w-14 h-14 animate-pulse-glow hover:animate-none hover:scale-110 transition-all duration-200"
           >
-            <MessageSquare className="w-6 h-6" />
+            <MessageSquareText className="size-6" />
           </Button>
         </div>
       </div>

@@ -278,7 +278,7 @@ def convert_raw_to_mapped(
     
     # Resolve paths
     raw_data_dir = get_data_path("datas/raw_data")
-    output_path = get_data_path("datas/mapped_data") / output_filename
+    output_path = Path("/app/app/scripts/datas/mapped_data/persons_mapped.json")
     glb_path = get_data_path(f"datas/models/{glb_filename}")
     
     print("=" * 60)
