@@ -139,14 +139,14 @@ function Camera({
 
       const distanceToCam = Math.sqrt(
         Math.pow(tx - camera.position.x, 2) +
-        Math.pow(ty - camera.position.y, 2) +
-        Math.pow(tz - camera.position.z, 2),
+          Math.pow(ty - camera.position.y, 2) +
+          Math.pow(tz - camera.position.z, 2),
       );
 
       const distanceToTarget = Math.sqrt(
         Math.pow(cx - controlsRef.current.target.x, 2) +
-        Math.pow(cy - controlsRef.current.target.y, 2) +
-        Math.pow(cz - controlsRef.current.target.z, 2),
+          Math.pow(cy - controlsRef.current.target.y, 2) +
+          Math.pow(cz - controlsRef.current.target.z, 2),
       );
 
       if (distanceToCam < 0.1 && distanceToTarget < 0.1) {
@@ -192,6 +192,25 @@ function Background() {
     >
       <source src="/background.mp4" type="video/mp4" />
     </video>
+  );
+}
+
+function SplashVideo() {
+  const [videoEnded, setVideoEnded] = useState<boolean>(false);
+
+  if (videoEnded) return null;
+
+  return (
+    <dialog className="group fixed left-0 top-0 z-200 flex h-full w-full items-center justify-center bg-background data-[state=hide]:animate-out fade-out duration-1000 fill-mode-forwards">
+      <video
+        src="/splash.mp4"
+        autoPlay
+        muted
+        playsInline
+        onEnded={() => setVideoEnded(true)}
+        className="w-full h-full object-cover animate-in fade-in duration-500 group-data-[state=hide]:animate-out fade-out fill-mode-forwards"
+      />
+    </dialog>
   );
 }
 
@@ -298,6 +317,7 @@ export default function Home() {
   return (
     <div className="fixed w-screen h-full bg-pattern bg-cover bg-center bg-no-repeat">
       <Background />
+      {isModelLoaded && <SplashVideo />}
 
       <Header />
       {isModelLoaded && isSplashReady ? (
