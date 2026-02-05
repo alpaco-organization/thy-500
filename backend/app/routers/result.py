@@ -1,17 +1,45 @@
-from fastapi import APIRouter, HTTPException, Response, Query
+from fastapi import APIRouter, Header, HTTPException, Response, Query
 from typing import List, Optional
 import uuid
-import unicodedata
 from datetime import datetime
 
 from app.db.mongo import get_db
 from app.models.result import ResultOut, ResultCreate
+from app.utils.normalize import normalize_name
 
 router = APIRouter(prefix="/api/results", tags=["results"])
 
+# Error messages by language
+ERROR_MESSAGES = {
+    "tr": {
+        "feedback_required": "Geri bildirim sağlanmalıdır",
+        "no_results_found": "Sonuç bulunamadı",
+    },
+    "en": {
+        "feedback_required": "Feedback must be provided",
+        "no_results_found": "No results found",
+    }
+}
+
+
+def get_lang(accept_language: Optional[str]) -> str:
+    """Get language from Accept-Language header."""
+    if accept_language and "tr" in accept_language.lower():
+        return "tr"
+    return "en"
+
+
+def get_error_message(key: str, lang: str) -> str:
+    """Get error message by key and language."""
+    return ERROR_MESSAGES.get(lang, ERROR_MESSAGES["en"]).get(key, key)
+
 
 @router.post("/")
-async def create_result(result: ResultCreate):
+async def create_result(
+    result: ResultCreate,
+    accept_language: Optional[str] = Header(None, alias="Accept-Language")
+):
+    lang = get_lang(accept_language)
     db = get_db()
     results_collection = db["results"]
     persons_collection = db["persons"]
@@ -19,7 +47,7 @@ async def create_result(result: ResultCreate):
     if result.feedback is None:
         raise HTTPException(
             status_code=400,
-            detail="Feedback must be provided"
+            detail=get_error_message("feedback_required", lang)
         )
 
     result_data = {
@@ -39,6 +67,7 @@ async def create_result(result: ResultCreate):
 
     return {}
 
+
 # Get all results with pagination and search
 @router.get("/")
 async def get_all_results(page: int = 0, search: Optional[str] = None):
@@ -50,12 +79,10 @@ async def get_all_results(page: int = 0, search: Optional[str] = None):
 
     query = {}
     if search:
-        search_upper = search.translate(str.maketrans("iışğüçö", "İIŞĞÜÇÖ")).upper()
-        search_upper = unicodedata.normalize("NFD", search_upper)
         query = {
             "$or": [
-                {"personId": {"$regex": search}},
-                {"personName": {"$regex": search_upper}}
+                {"personId": {"$regex": search, "$options": "i"}},
+                {"personName": {"$regex": search, "$options": "i"}}
             ]
         }
 
@@ -75,17 +102,24 @@ async def get_all_results(page: int = 0, search: Optional[str] = None):
 
 # Get results by personId
 @router.get("/by-person/{person_id}", response_model=List[ResultOut])
-async def get_results_by_person(person_id: str):
+async def get_results_by_person(
+    person_id: str,
+    accept_language: Optional[str] = Header(None, alias="Accept-Language")
+):
+    lang = get_lang(accept_language)
     db = get_db()
     collection = db["results"]
-    
+
     cursor = collection.find(
         {"personId": person_id},
         projection={"_id": 0}
     )
     results = await cursor.to_list(length=100)
-    
+
     if not results:
-        raise HTTPException(status_code=404, detail="No results found")
-    
+        raise HTTPException(
+            status_code=404,
+            detail=get_error_message("no_results_found", lang)
+        )
+
     return results

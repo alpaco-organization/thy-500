@@ -11,7 +11,7 @@ services:
   backend:
     build:
       context: ./backend
-    image: mehmetkoreken/thy-500-backend:latest
+    # image: mehmetkoreken/thy-500-backend:latest
     container_name: thy500-backend
     restart: unless-stopped
     environment:
@@ -26,6 +26,10 @@ services:
       PRESIGN_EXPIRES_SECONDS: ${PRESIGN_EXPIRES_SECONDS:-900}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ALGORITHM: ${JWT_ALGORITHM}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+
     depends_on:
       - mongo
     ports:
@@ -34,7 +38,7 @@ services:
   frontend:
     build:
       context: ./frontend
-    image: mehmetkoreken/thy-500-frontend:latest
+    # image: mehmetkoreken/thy-500-frontend:latest
     container_name: thy500-frontend
     restart: unless-stopped
     depends_on:
@@ -45,7 +49,7 @@ services:
       INTERNAL_API_BASE_URL: http://backend:8000
       NEXT_PUBLIC_API_BASE_URL: http://backend:8000
     ports:
-      - "3001:3000"
+      - "3000:3000"
 
 volumes:
   mongo_data:

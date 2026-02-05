@@ -11,14 +11,15 @@ async def seed_admin():
     client = AsyncIOMotorClient(settings.mongodb_uri)
     db = client[settings.mongodb_db]
 
-    # Admin bilgileri
-    admin_email = "admin@alpaco.com"
-    admin_password = "alpacothy500"
+    admin_email = settings.admin_email
+    admin_password = settings.admin_password
 
+    # ✅ UNCOMMENT THIS CHECK!
     existing = await db.users.find_one({"email": admin_email})
 
     if existing:
-        print(f"Admin zaten mevcut: {admin_email}")
+        print(f"Admin already exists: {admin_email}")
+        client.close()
         return
 
     admin_user = {
@@ -32,10 +33,12 @@ async def seed_admin():
 
     result = await db.users.insert_one(admin_user)
 
-    print(f"Admin oluşturuldu!")
+    print(f"Admin created!")
     print(f"Email: {admin_email}")
-    print(f"Password: {admin_password}")
+    print(f"Password: {admin_password}")  # Add this for debugging
     print(f"ID: {result.inserted_id}")
+
+    client.close()
 
 
 if __name__ == "__main__":

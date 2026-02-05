@@ -22,5 +22,9 @@ class Settings(BaseSettings):
     jwt_algorithm: str = ""
     access_token_expire_minutes: int = 120  # 2 hours
 
+    # Admin seed settings
+    admin_email: str = "admin@alpaco.com"
+    admin_password: str = "alpacothy500"
+
 
 settings = Settings()

@@ -19,3 +19,6 @@ notes.md
 
 # OS
 .DS_Store
+# Large files
+backend/app/scripts/datas/raw_data/32k_texture.png
+backend/app/scripts/datas/models/map_model.glb
