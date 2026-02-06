@@ -14,13 +14,7 @@ async def seed_admin():
     admin_email = settings.admin_email
     admin_password = settings.admin_password
 
-    # ✅ UNCOMMENT THIS CHECK!
     existing = await db.users.find_one({"email": admin_email})
-
-    if existing:
-        print(f"Admin already exists: {admin_email}")
-        client.close()
-        return
 
     admin_user = {
         "email": admin_email,
@@ -31,12 +25,23 @@ async def seed_admin():
         "updated_at": datetime.utcnow(),
     }
 
-    result = await db.users.insert_one(admin_user)
-
-    print(f"Admin created!")
-    print(f"Email: {admin_email}")
-    print(f"Password: {admin_password}")  # Add this for debugging
-    print(f"ID: {result.inserted_id}")
+    if existing:
+        # Update existing admin with new password
+        result = await db.users.update_one(
+            {"email": admin_email},
+            {"$set": {
+                "password_hash": hash_password(admin_password),
+                "updated_at": datetime.utcnow()
+            }}
+        )
+        print(f"Admin password updated!")
+        print(f"Email: {admin_email}")
+    else:
+        # Create new admin
+        result = await db.users.insert_one(admin_user)
+        print(f"Admin created!")
+        print(f"Email: {admin_email}")
+        print(f"ID: {result.inserted_id}")
 
     client.close()
 
