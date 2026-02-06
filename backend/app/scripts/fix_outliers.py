@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-Fix outliers by mapping them to the closest valid person in the cabin.
-Reads outliers from outliers_x_above_5.csv and finds the closest person
-from persons_mapped.json that is not an outlier.
+Fix all outliers by mapping them to the closest valid person in the cabin.
+Reads outliers from both:
+- outliers_x_above_5.csv (X > 5)
+- outliers_x_below_minus5.csv (X < -5)
+
+Finds the closest person from persons_mapped.json that is not an outlier (-5 <= X <= 5).
 """
 
 import csv
@@ -11,15 +14,20 @@ from pathlib import Path
 import math
 
 SCRIPT_DIR = Path(__file__).parent
-CSV_PATH = SCRIPT_DIR / "datas" / "mapped_data" / "outliers_x_above_5.csv"
+CSV_PATH_ABOVE = SCRIPT_DIR / "datas" / "mapped_data" / "outliers_x_above_5.csv"
+CSV_PATH_BELOW = SCRIPT_DIR / "datas" / "mapped_data" / "outliers_x_below_minus5.csv"
 JSON_PATH = SCRIPT_DIR / "datas" / "mapped_data" / "persons_mapped.json"
 OUTPUT_PATH = SCRIPT_DIR / "datas" / "mapped_data" / "outliers_fixed.json"
+OUTPUT_CSV = SCRIPT_DIR / "datas" / "mapped_data" / "outliers_fixed.csv"
 
 
-def load_outliers() -> list[dict]:
+def load_outliers_from_csv(csv_path: Path) -> list[dict]:
     """Load outlier persons from CSV."""
     outliers = []
-    with open(CSV_PATH, 'r', encoding='utf-8') as f:
+    if not csv_path.exists():
+        return outliers
+
+    with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             outliers.append({
@@ -66,26 +74,31 @@ def find_closest_valid_person(outlier: dict, valid_persons: list[dict]) -> dict:
 
 def main():
     print("=" * 60)
-    print("FIX OUTLIERS - Map to closest valid person")
+    print("FIX ALL OUTLIERS")
     print("=" * 60)
 
     # Load data
     print("\nLoading data...")
-    outliers = load_outliers()
+    outliers_above = load_outliers_from_csv(CSV_PATH_ABOVE)
+    outliers_below = load_outliers_from_csv(CSV_PATH_BELOW)
     all_persons = load_persons()
 
-    print(f"  Outliers: {len(outliers)}")
+    outliers = outliers_above + outliers_below
+
+    print(f"  Outliers (X > 5): {len(outliers_above)}")
+    print(f"  Outliers (X < -5): {len(outliers_below)}")
+    print(f"  Total outliers: {len(outliers)}")
     print(f"  All persons: {len(all_persons)}")
 
     # Get outlier IDs
     outlier_ids = {o['personId'] for o in outliers}
 
-    # Filter valid persons (not outliers, x between -4 and 4)
+    # Filter valid persons (not outliers, -5 <= x <= 5)
     valid_persons = [
         p for p in all_persons
-        if p['personId'] not in outlier_ids and -4 <= p['x'] <= 4
+        if p['personId'] not in outlier_ids and -5 <= p['x'] <= 5
     ]
-    print(f"  Valid persons (not outliers, -4 <= x <= 4): {len(valid_persons)}")
+    print(f"  Valid persons (not outliers, -5 <= x <= 5): {len(valid_persons)}")
 
     # Find closest valid person for each outlier
     print("\nMapping outliers to closest valid persons...")
@@ -122,9 +135,8 @@ def main():
         json.dump(results, f, indent=2, ensure_ascii=False)
 
     # Also save as CSV for easy viewing
-    csv_output = OUTPUT_PATH.with_suffix('.csv')
-    print(f"Saving CSV to: {csv_output}")
-    with open(csv_output, 'w', newline='', encoding='utf-8') as f:
+    print(f"Saving CSV to: {OUTPUT_CSV}")
+    with open(OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=[
             'personId', 'name',
             'original_x', 'original_y', 'original_z',
