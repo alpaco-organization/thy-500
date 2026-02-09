@@ -101,11 +101,11 @@ function Information({ result }: { result: IPerson | null }) {
     <>
       <div
         className={clsx(
-          "fixed z-50 top-0 lg:top-[initial] left-1/2 lg:left-[initial] lg:bottom-4 lg:right-4 flex justify-center -translate-x-1/2 transition-all duration-500",
+          "fixed z-50 top-0 lg:top-[initial] left-1/2 lg:left-[initial] lg:bottom-4 lg:right-0 flex justify-center -translate-x-1/2 transition-all duration-500",
           {
             "-translate-y-full lg:translate-y-0 lg:translate-x-full":
               isDialogOpen || isNavigating || !isVisible,
-            "translate-y-4 lg:translate-y-0 lg:translate-x-0":
+            "translate-y-4 lg:translate-y-0 lg:-translate-x-4":
               isVisible && !isNavigating && !isDialogOpen,
           },
         )}
