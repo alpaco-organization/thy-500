@@ -10,7 +10,12 @@ from app.routers.result import router as result_router
 from app.routers.search_history import router as search_history_router
 from app.routers import auth
 
-app = FastAPI(title="thy-500-backend")
+app = FastAPI(
+    title="thy-500-backend",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None
+)
 
 
 @app.exception_handler(RequestValidationError)
