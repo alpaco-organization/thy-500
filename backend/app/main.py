@@ -50,7 +50,7 @@ async def health():
 
 app.include_router(person_router)
 app.include_router(result_router)
-app.include_router(search_history_router)
+# app.include_router(search_history_router)
 app.include_router(auth.router)
 
 @app.on_event("startup")
@@ -58,8 +58,8 @@ async def _startup():
     db = get_db()
     await db["persons"].create_index("name_normalized")
     await db["results"].create_index("personName")
-    await db["search_history"].create_index("createdAt")
-    await db["search_history"].create_index("query")
+    # await db["search_history"].create_index("createdAt")
+    # await db["search_history"].create_index("query")
 
 @app.on_event("shutdown")
 async def _shutdown():
