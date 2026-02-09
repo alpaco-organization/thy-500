@@ -10,6 +10,8 @@ class PersonOut(BaseModel):
     x: float
     y: float
     z: float
+    matchCorrect: Optional[bool] = None
+    feedback: Optional[str] = None
 
 
 class PersonSearchOut(BaseModel):
@@ -18,6 +20,8 @@ class PersonSearchOut(BaseModel):
     x: float
     y: float
     z: float
+    matchCorrect: Optional[bool] = None
+    feedback: Optional[str] = None
 
 
 SearchType = Literal["identity", "fullName"]

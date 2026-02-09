@@ -41,8 +41,23 @@
 
   --font-sans: "Red Hat Display", sans-serif;
 
-  --background-image-sky: url("/sky.jpg");
+  --background-image-pattern: url("/pattern.png");
+  --background-image-auth: url("/auth-bg.png");
+
+  --animate-pulse-glow: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 rgb(201 0 25 / 0.7);
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 20px 10px rgb(201 0 25 / 0.4);
+    }
+  }
 }
+
 
 :root {
   --foreground: #232b38;
@@ -89,6 +104,16 @@
 
   body {
     @apply text-foreground bg-background;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-linear-to-r from-gold to-white bg-clip-text text-transparent inline-block;
+  }
+
+  .border-gradient {
+    @apply p-px bg-linear-to-r from-gold to-white backdrop-blur-lg;
   }
 }
 

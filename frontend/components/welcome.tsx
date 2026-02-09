@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/language-context";
-import { useNavigation } from "@/contexts/navigation-context";
 import { clsx } from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +19,6 @@ interface WelcomeProps {
 
 export function Welcome({ onTimeout }: WelcomeProps) {
   const { t } = useLanguage();
-  const { isNavigating } = useNavigation();
 
   const isAgreementsExist =
     Boolean(process.env.NEXT_PUBLIC_GDPR_URL) &&
@@ -61,34 +59,42 @@ export function Welcome({ onTimeout }: WelcomeProps) {
 
       if (timeSinceLastInteraction >= INACTIVITY_TIMEOUT) {
         setIsVisible(true);
-        setIsApproved(false);
+        setIsApproved(isAgreementsExist ? false : true);
         onTimeout();
       }
     }, INACTIVITY_TIMEOUT);
-  }, [appMode]);
+  }, [isAgreementsExist, onTimeout, appMode]);
 
   useEffect(() => {
-    if (isNavigating) {
-      if (appMode !== "kiosk") {
-        setIsVisible(false);
-      }
-      lastInteractionTimeRef.current = Date.now();
+    if (appMode !== "kiosk") return;
 
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-        inactivityTimerRef.current = null;
-      }
-    } else if (!isVisible && appMode === "kiosk") {
+    const handleUserActivity = () => {
       lastInteractionTimeRef.current = Date.now();
+      if (!isVisible) {
+        startInactivityTimer();
+      }
+    };
+
+    const events = ['click', 'keydown', 'scroll', 'touchstart', 'mousemove'];
+    
+    events.forEach(event => {
+      window.addEventListener(event, handleUserActivity);
+    });
+
+    if (!isVisible) {
       startInactivityTimer();
     }
 
     return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, handleUserActivity);
+      });
+      
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current);
       }
     };
-  }, [isNavigating, isVisible, startInactivityTimer, appMode]);
+  }, [isVisible, startInactivityTimer, appMode]);
 
   const handleApprove = () => {
     if (isAgreementsExist && !isApproved) return;

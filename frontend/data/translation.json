@@ -1,7 +1,9 @@
 {
   "en": {
-    "common": {
-      "or": "or"
+    "errors": {
+      "personNotFound": "No such person found: \"{query}\". Please try another search.",
+      "searchFailed": "An error occurred during search. Please try again.",
+      "unknown": "An unexpected error occurred. Please try again."
     },
     "errors": {
       "personNotFound": "No such person found: \"{query}\". Please try another search.",
@@ -9,7 +11,12 @@
       "unknown": "An unexpected error occurred. Please try again."
     },
     "information": {
-      "title": "Congratulations! Here's Your Place in the TK Family"
+      "feedbackTitle": "Share Your Thoughts",
+      "feedbackDescription": "We'd love to hear your feedback and suggestions about your experience.",
+      "feedbackPlaceholder": "Write your thoughts here...",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "thankYouFeedback": "Thank you for your feedback!"
     },
     "search": {
       "fullName": "Full Name",
@@ -17,7 +24,8 @@
       "identityNumber": "Staff ID",
       "fullNamePlaceholder": "Enter Full Name",
       "identityNumberPlaceholder": "Enter Staff ID",
-      "reset": "Search Again"
+      "reset": "Search Again",
+      "disclaimer": "The visual and location data on the aircraft model are provided by AI; please share feedback in case of any errors or omissions."
     },
     "welcome": {
       "subtitle": "To Many Journeys Together",
@@ -39,6 +47,28 @@
       "title": "Error",
       "description": "An unexpected error occurred. Please try again.",
       "retry": "Try Again"
+    },
+    "auth": {
+      "title": "Login Dashboard",
+      "description": "Enter your email and password below to login to your account.",
+      "email": "Email",
+      "password": "Password",
+      "emailPlaceholder": "Enter Email",
+      "passwordPlaceholder": "Enter Password",
+      "login": "Login",
+      "logout": "Logout"
+    },
+    "dashboard": {
+      "title": "Feedbacks",
+      "searchPlaceholder": "Search by Name or Staff ID...",
+      "noResults": "No feedback found.",
+      "loading": "Loading feedbacks...",
+      "matchCorrect": "Match Correct",
+      "matchIncorrect": "Match Incorrect",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page",
+      "feedbacks": "Feedbacks"
     }
   },
   "tr": {
@@ -48,7 +78,12 @@
       "unknown": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin."
     },
     "information": {
-      "title": "Tebrikler! İşte TK Aile'deki Yerin"
+      "feedbackTitle": "Görüş ve Önerileriniz",
+      "feedbackDescription": "Deneyiminiz hakkındaki görüş ve önerilerinizi duymak isteriz.",
+      "feedbackPlaceholder": "Düşüncelerinizi buraya yazın...",
+      "submit": "Gönder",
+      "cancel": "İptal",
+      "thankYouFeedback": "Geri bildiriminiz için teşekkür ederiz!"
     },
     "search": {
       "fullName": "Ad Soyad",
@@ -56,7 +91,8 @@
       "identityNumber": "Sicil Numarası",
       "fullNamePlaceholder": "Ad Soyad Giriniz",
       "identityNumberPlaceholder": "Sicil Numarası Giriniz",
-      "reset": "Tekrar Ara"
+      "reset": "Tekrar Ara",
+      "disclaimer": "Uçak modeli üzerindeki görsel ve konum verileri yapay zekâ tarafından sağlanmaktadır; hata veya eksiklik durumunda geri bildirim rica ederiz."
     },
     "welcome": {
       "subtitle": "Birlikte Nice Yolculuklara",
@@ -78,6 +114,28 @@
       "title": "Hata",
       "description": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
       "retry": "Tekrar Deneyin"
+    },
+    "auth": {
+      "title": "Giriş Paneli",
+      "description": "Hesabınıza giriş yapmak için aşağıya e-posta ve şifrenizi girin.",
+      "email": "E-posta",
+      "password": "Şifre",
+      "emailPlaceholder": "E Posta Giriniz",
+      "passwordPlaceholder": "Parola Giriniz",
+      "login": "Giriş Yap",
+      "logout": "Çıkış Yap"
+    },
+    "dashboard": {
+      "title": "Geri Bildirimler",
+      "searchPlaceholder": "İsim veya Sicil Numarası ile Ara...",
+      "noResults": "Geri bildirim bulunamadı.",
+      "loading": "Geri bildirimler yükleniyor...",
+      "matchCorrect": "Eşleşme Doğru",
+      "matchIncorrect": "Eşleşme Yanlış",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "page": "Sayfa",
+      "feedbacks": "Geri Bildirim"
     }
   }
 }

@@ -19,3 +19,6 @@ notes.md
 
 # OS
 .DS_Store
+
+# Large files (tracked with Git LFS)
+backend/app/scripts/datas/raw_data/32k_texture.png
