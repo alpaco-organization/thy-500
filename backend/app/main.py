@@ -31,8 +31,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": detail}
     )
 
-# allow_origins = ["*"] if settings.cors_allow_origins.strip() == "*" else [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
-allow_origins = ["http://localhost:3000"]
+allow_origins = ["*"] if settings.cors_allow_origins.strip() == "*" else [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
