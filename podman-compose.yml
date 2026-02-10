@@ -1,0 +1,58 @@
+services:
+  mongo:
+    # Red Hat MongoDB için alternatif: ubi9 tabanlı mongo veya müşteri registry'sinde varsa
+    # Eğer müşterinin kendi registry'sinde mongo varsa onu kullanın
+    image: registry.access.redhat.com/rhel9/mongodb-70:latest
+    container_name: thy500-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/var/lib/mongodb/data
+    environment:
+      MONGODB_DATABASE: thy500
+    user: "0"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.podman
+    container_name: thy500-backend
+    restart: unless-stopped
+    environment:
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB: thy500
+      CORS_ALLOW_ORIGINS: "*"
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION:-eu-north-1}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_PREFIX: ${S3_PREFIX:-}
+      PRESIGN_EXPIRES_SECONDS: ${PRESIGN_EXPIRES_SECONDS:-900}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+    depends_on:
+      - mongo
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.podman
+    container_name: thy500-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"
+      INTERNAL_API_BASE_URL: http://backend:8000
+      NEXT_PUBLIC_API_BASE_URL: http://backend:8000
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo_data:
