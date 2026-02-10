@@ -67,34 +67,16 @@ thy500-images.tar  ~2.5-3.0 GB
 
 ### Adım 4: Transfer İçin Dosyaları Hazırla
 ```bash
-# Transfer edilecek dosyalar
-ls -lh thy500-images.tar
-ls -lh docker-compose.yml
-ls -lh .env  # eğer varsa
-ls -lh load-and-deploy.sh
+# Transfer edilecek dosyalar (minimum)
+ls -lh thy500-images.tar    # ~640MB-3GB
+ls -lh docker-compose.yml   # Compose config
 ```
 
 ---
 
-## 2️⃣ Müşteri Ortamına Transfer (Air-Gapped - x86_64)
+## 2️⃣ Müşteri Ortamında - Deployment (Air-Gapped - Podman 5.6.0)
 
-### Transfer Yöntemleri:
-- 📀 USB flash disk
-- 💾 External hard drive
-- 🔐 Secure file transfer (SCP/SFTP eğer internal network varsa)
-- 📦 Physical media
-
-### Transfer Edilmesi Gerekenler:
-```bash
-thy500-images.tar          # ~2-3 GB
-docker-compose.yml         # Compose config
-load-and-deploy.sh         # Deployment script
-.env                       # Environment variables (oluşturulacak)
-```
-
----
-
-## 3️⃣ Müşteri Ortamında (Air-Gapped - Podman 5.6.0)
+**Not:** TAR dosyası ve `docker-compose.yml` dosyasının manuel olarak sunucuya transfer edildiğini varsayıyoruz.
 
 ### ✅ Docker TAR → Podman Load Uyumluluğu
 
@@ -109,16 +91,15 @@ podman load -i thy500-images.tar  # SORUNSUZ ÇALIŞIR
 
 ### Adım 1: Dosyaları Kontrol Et
 ```bash
-cd /path/to/transferred/files
+cd /path/to/files
 ls -lh
 
-# Beklenen dosyalar:
-# -rw-r--r-- 1 user user 2.8G thy500-images.tar
-# -rw-r--r-- 1 user user 2.1K docker-compose.yml
-# -rwxr-xr-x 1 user user 1.8K load-and-deploy.sh
+# Beklenen dosyalar (minimum):
+# thy500-images.tar       (~640MB-3GB)
+# docker-compose.yml      (~2KB)
 ```
 
-### Adım 2: Image'leri Load Et (Manuel Test - İsteğe Bağlı)
+### Adım 2: TAR Dosyasını Load Et
 ```bash
 # Manuel load
 podman load -i thy500-images.tar
@@ -157,37 +138,99 @@ EOF
 ```
 
 ### Adım 3: Script'i Çalıştırılabilir Yap
+
+### 🎯 Adım 4: Servisleri Başlat
+
 ```bash
-chmod +x load-and-deploy.sh
+# Servisleri arka planda başlat
+podman-compose -f docker-compose.yml up -d
 ```
 
-### Adım 4: Deploy Et
-```bash
-./load-and-deploy.sh
+**Beklenen çıktı:**
 ```
-
-**Bu script:**
-- ✅ TAR dosyasından image'leri yükler
-- ✅ .env dosyasını kontrol eder
-- ✅ podman-compose'u kurar (eğer yoksa)
-- ✅ Servisleri başlatır
-
-### Adım 5: Deployment Doğrula
-```bash
-# Container'ları kontrol et
-podman ps
-
-# Logları izle
-podman-compose -f docker-compose.yml logs -f
-
-# Health check
-curl http://localhost:8000/health   # Backend
-curl http://localhost:3000          # Frontend
+Creating network thy-500-main_default
+Creating volume thy-500-main_mongo_data
+Creating thy500-mongo ... done
+Creating thy500-backend ... done
+Creating thy500-frontend ... done
 ```
 
 ---
 
-## 🔧 Manuel Komutlar (İsteğe Bağlı)
+### 🎯 Adım 5: Deployment'ı Doğrula
+
+```bash
+# 1. Container'ların durumunu kontrol et
+podman ps
+
+# Beklenen çıktı (3 container UP olmalı):
+# CONTAINER ID  IMAGE                              STATUS        PORTS
+# xxx           localhost/thy500-frontend:latest   Up 30 sec     0.0.0.0:3000->3000/tcp
+# xxx           localhost/thy500-backend:latest    Up 35 sec     0.0.0.0:8000->8000/tcp
+# xxx           docker.io/library/mongo:7          Up 40 sec     0.0.0.0:27017->27017/tcp
+
+# 2. Logları kontrol et
+podman-compose -f docker-compose.yml logs -f
+
+# 3. Health check
+curl http://localhost:8000/docs    # Backend API docs
+curl http://localhost:3000         # Frontend
+
+# 4. Specific service logları
+podman logs thy500-backend --tail 50
+podman logs thy500-frontend --tail 50
+podman logs thy500-mongo --tail 50
+```
+
+---
+
+## ✅ Deployment Tamamlandı!
+
+**Erişim URL'leri:**
+- 🎨 Frontend: `http://<sunucu-ip>:3000`
+- 🔌 Backend API: `http://<sunucu-ip>:8000`
+- 📚 API Docs: `http://<sunucu-ip>:8000/docs`
+- 🗄️ MongoDB: `<sunucu-ip>:27017`
+
+---
+
+## 🛠️ Yönetim Komutları
+
+### Servisleri Durdur
+```bash
+podman-compose -f docker-compose.yml stop
+```
+
+### Servisleri Yeniden Başlat
+```bash
+podman-compose -f docker-compose.yml restart
+```
+
+### Servisleri Tamamen Kaldır
+```bash
+podman-compose -f docker-compose.yml down
+```
+
+### Volume'leri de Sil (DİKKAT: Verileri siler!)
+```bash
+podman-compose -f docker-compose.yml down -v
+```
+
+### Logları İzle
+```bash
+# Tüm servisler
+podman-compose -f docker-compose.yml logs -f
+
+# Sadece backend
+podman logs -f thy500-backend
+
+# Son 100 satır
+podman logs thy500-frontend --tail 100
+```
+
+---
+
+## 🔧 Manuel Komutlar Özeti (Reference)
 
 ### Build Ortamında (Docker - Mac):
 ```bash
