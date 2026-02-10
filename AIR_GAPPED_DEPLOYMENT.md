@@ -1,34 +1,69 @@
 # 🚀 Air-Gapped Deployment - Adım Adım Kılavuz
 
-## 📍 Senaryo: İntel x86_64 Sunucu → Air-Gapped Müşteri Ortamı
+## 📍 Senaryo: Docker ile Build → TAR Transfer → Podman ile Deploy
+
+### ✅ Docker ve Podman Uyumluluğu
+
+**ÖNEMLİ:** Docker ve Podman **%100 uyumludur** çünkü:
+- Her ikisi de **OCI (Open Container Initiative) standardını** kullanır
+- Image formatları tamamen aynı
+- Docker ile build edilen image → Podman ile çalıştırılabilir
+- Podman ile build edilen image → Docker ile çalıştırılabilir
+
+```
+[Docker Build] → [TAR Export] → [Transfer] → [Podman Load] ✅ ÇALIŞIR
+[Podman Build] → [TAR Export] → [Transfer] → [Docker Load] ✅ ÇALIŞIR
+```
 
 ---
 
-## 1️⃣ Intel Sunucuda (İnternete Erişimli - x86_64)
+## 1️⃣ Build Ortamında (İnternete Erişimli - Mac/Intel x86_64)
 
-### Adım 1: Projeyi Transfer Et
+### Adım 1: Docker Desktop'ı Başlat (Mac için)
 ```bash
-# Projeyi intel sunucuya kopyala
-cd /path/to/thy-500-main
+# Docker Desktop'ın çalıştığından emin ol
+docker ps  # Çalışıyorsa liste gösterir
 ```
 
-### Adım 2: Script'i Çalıştırılabilir Yap
+### Adım 2: Build Script'ini Kullan
 ```bash
+cd /Users/oguzhanigrek/Downloads/thy-500-main
+
+# Docker ile build script (Mac için)
+chmod +x build-and-export-docker.sh
+./build-and-export-docker.sh
+```
+
+**VEYA Podman Kuruluysa:**
+```bash
+# Podman ile build script (Linux/Intel sunucu için)
 chmod +x build-and-export.sh
-```
-
-### Adım 3: Build ve Export İşlemini Başlat
-```bash
 ./build-and-export.sh
 ```
 
-**Bu script:**
-- ✅ Backend image'ini build eder (x86_64)
-- ✅ Frontend image'ini build eder (x86_64)
-- ✅ MongoDB:7 image'ini çeker
-- ✅ Hepsini `thy500-images.tar` dosyasına kaydeder
+### Adım 3: Build Süreci (15-20 dakika)
+**Script otomatik olarak:**
+- ✅ Backend image'ini build eder (`thy500-backend:latest`)
+  - Python 3.12 slim base image
+  - Dependencies install
+  - Application code kopyala
+- ✅ Frontend image'ini build eder (`thy500-frontend:latest`)
+  - Node.js 20 alpine base image
+  - Multi-stage build (deps → builder → runner)
+  - Next.js production build
+- ✅ MongoDB:7 image'ini pull eder
+- ✅ Tüm image'leri `thy500-images.tar` dosyasına export eder
 
-**Beklenen çıktı boyutu:** ~2-3 GB TAR dosyası
+**Beklenen çıktı:**
+```bash
+✅ Built images:
+thy500-backend    latest    abc123    2.5GB
+thy500-frontend   latest    def456    1.8GB
+mongo             7         ghi789    700MB
+
+📊 TAR file size:
+thy500-images.tar  ~2.5-3.0 GB
+```
 
 ### Adım 4: Transfer İçin Dosyaları Hazırla
 ```bash
@@ -61,15 +96,40 @@ load-and-deploy.sh         # Deployment script
 
 ## 3️⃣ Müşteri Ortamında (Air-Gapped - Podman 5.6.0)
 
+### ✅ Docker TAR → Podman Load Uyumluluğu
+
+**Dikkat:** Docker ile build edilen TAR dosyası Podman ile **direkt yüklenebilir**!
+```bash
+# Docker ile export edildi
+docker save -o thy500-images.tar ...
+
+# Podman ile load edilebilir ✅
+podman load -i thy500-images.tar  # SORUNSUZ ÇALIŞIR
+```
+
 ### Adım 1: Dosyaları Kontrol Et
 ```bash
 cd /path/to/transferred/files
 ls -lh
 
 # Beklenen dosyalar:
-# - thy500-images.tar
-# - docker-compose.yml
-# - load-and-deploy.sh
+# -rw-r--r-- 1 user user 2.8G thy500-images.tar
+# -rw-r--r-- 1 user user 2.1K docker-compose.yml
+# -rwxr-xr-x 1 user user 1.8K load-and-deploy.sh
+```
+
+### Adım 2: Image'leri Load Et (Manuel Test - İsteğe Bağlı)
+```bash
+# Manuel load
+podman load -i thy500-images.tar
+
+# Load edilen image'leri kontrol et
+podman images | grep -E "(thy500|mongo)"
+
+# Beklenen çıktı:
+# localhost/thy500-backend    latest    abc123    2 hours ago    2.5 GB
+# localhost/thy500-frontend   latest    def456    2 hours ago    1.8 GB
+# docker.io/library/mongo     7         ghi789    3 hours ago    700 MB
 ```
 
 ### Adım 2: .env Dosyası Oluştur (Eğer Yoksa)
@@ -129,7 +189,31 @@ curl http://localhost:3000          # Frontend
 
 ## 🔧 Manuel Komutlar (İsteğe Bağlı)
 
-### Intel Sunucuda (Build):
+### Build Ortamında (Docker - Mac):
+```bash
+# Manuel build - Backend
+docker build --platform linux/amd64 \
+  -t thy500-backend:latest \
+  -f backend/Dockerfile \
+  ./backend
+
+# Manuel build - Frontend
+docker build --platform linux/amd64 \
+  -t thy500-frontend:latest \
+  -f frontend/Dockerfile \
+  ./frontend
+
+# MongoDB pull
+docker pull --platform linux/amd64 mongo:7
+
+# Export to TAR
+docker save -o thy500-images.tar \
+  thy500-backend:latest \
+  thy500-frontend:latest \
+  mongo:7
+```
+
+### Build Ortamında (Podman - Linux/Intel):
 ```bash
 # Manuel build - Backend
 podman build --platform linux/amd64 \
@@ -227,16 +311,33 @@ podman logs thy500-mongo
 podman exec -it thy500-mongo mongosh
 ```
 
+### Problem: Docker ile build, Podman ile load uyumsuzluğu var mı?
+**Cevap: HAYIR! %100 uyumludur.**
+```bash
+# Docker ve Podman OCI standardını kullanır
+# Hiçbir değişiklik gerekmez
+
+# Docker ile build edilmiş TAR:
+docker save -o thy500-images.tar ...
+
+# Podman ile direkt load edilir:
+podman load -i thy500-images.tar  ✅
+
+# Image tag/name değişmez
+# Container çalıştırma aynıdır
+```
+
 ---
 
 ## 📋 Kontrol Listesi
 
-### Intel Sunucuda (Build Tarafı):
-- [ ] Podman kurulu
+### Build Tarafı (Mac/Docker veya Linux/Podman):
+- [ ] Docker Desktop çalışıyor (Mac için) VEYA Podman kurulu (Linux)
 - [ ] İnternete erişim var
 - [ ] Yeterli disk alanı (10+ GB)
-- [ ] `build-and-export.sh` çalıştırıldı
-- [ ] `thy500-images.tar` oluşturuldu (~2-3 GB)
+- [ ] `build-and-export-docker.sh` (Mac) VEYA `build-and-export.sh` (Linux) çalıştırıldı
+- [ ] `thy500-images.tar` oluşturuldu (~2.5-3.0 GB)
+- [ ] Image'ler doğru build edildi (backend, frontend, mongo)
 
 ### Transfer:
 - [ ] `thy500-images.tar` transfer edildi
