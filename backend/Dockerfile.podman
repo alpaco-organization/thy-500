@@ -1,0 +1,32 @@
+# Red Hat UBI Python base image (offline registry'den çekilebilir)
+FROM registry.access.redhat.com/ubi9/python-312:latest
+
+USER 0
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt /app/requirements.txt
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy application code
+COPY app /app/app
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Set proper permissions
+RUN chgrp -R 0 /app && \
+    chmod -R g=u /app
+
+USER 1001
+
+EXPOSE 8000
+
+CMD ["/app/entrypoint.sh"]
