@@ -60,13 +60,13 @@ export function Search({
   return (
     <>
       {isFocused && query && (
-        <div className="fixed top-1/12 left-1/2 -translate-x-1/2 z-50 border-2 border-[#41424F]/80 bg-[#010101]/40 backdrop-blur-xl rounded-full px-6 py-2 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="fixed top-1/6 left-1/2 -translate-x-1/2 z-50 border-2 border-[#41424F]/80 bg-[#010101]/40 backdrop-blur-xl rounded-full px-6 py-2 animate-in fade-in slide-in-from-top-2 duration-300">
           <p className="capitalize text-white text-sm font-medium">{query}</p>
         </div>
       )}
       <div
         className={clsx(
-          "fixed px-4 bottom-0 left-1/2 z-40 w-full md:max-w-lg translate-x-[-50%]",
+          "fixed px-4 bottom-0 left-1/2 z-40 w-full md:max-w-lg translate-x-[-50%] transition-transform duration-500",
           isNavigating ? "translate-y-[calc(100%+1rem)]" : "translate-y-0",
         )}
       >
