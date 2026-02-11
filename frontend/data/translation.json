@@ -1,19 +1,11 @@
 {
   "en": {
-    "errors": {
-      "personNotFound": "No such person found: \"{query}\". Please try another search.",
-      "searchFailed": "An error occurred during search. Please try again.",
-      "unknown": "An unexpected error occurred. Please try again."
-    },
-    "errors": {
-      "personNotFound": "No such person found: \"{query}\". Please try another search.",
-      "searchFailed": "An error occurred during search. Please try again.",
-      "unknown": "An unexpected error occurred. Please try again."
-    },
     "information": {
       "feedbackTitle": "Share Your Thoughts",
       "feedbackDescription": "We'd love to hear your feedback and suggestions about your experience.",
-      "feedbackPlaceholder": "Write your thoughts here...",
+      "fullNamePlaceholder": "Enter Full Name",
+      "personIdPlaceholder": "Enter Staff ID",
+      "feedbackPlaceholder": "Enter Feedback",
       "submit": "Submit",
       "cancel": "Cancel",
       "thankYouFeedback": "Thank you for your feedback!"
@@ -72,15 +64,12 @@
     }
   },
   "tr": {
-    "errors": {
-      "personNotFound": "Böyle bir kişi bulunamadı: \"{query}\". Lütfen başka bir arama yapın.",
-      "searchFailed": "Arama sırasında bir hata oluştu. Lütfen tekrar deneyin.",
-      "unknown": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin."
-    },
     "information": {
       "feedbackTitle": "Görüş ve Önerileriniz",
       "feedbackDescription": "Deneyiminiz hakkındaki görüş ve önerilerinizi duymak isteriz.",
-      "feedbackPlaceholder": "Düşüncelerinizi buraya yazın...",
+      "fullNamePlaceholder": "Ad Soyad Giriniz",
+      "personIdPlaceholder": "Sicil Numarası Giriniz",
+      "feedbackPlaceholder": "Geri Bildirim Giriniz",
       "submit": "Gönder",
       "cancel": "İptal",
       "thankYouFeedback": "Geri bildiriminiz için teşekkür ederiz!"
