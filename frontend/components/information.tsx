@@ -19,8 +19,7 @@ import { useEffect, useState } from "react";
 import useFetch from "@/contexts/fetch-context";
 import { Spinner } from "./ui/spinner";
 import { MessageSquareText } from "lucide-react";
-
-const INFORMATION_TIMEOUT = 2000;
+import { Input } from "./ui/input";
 
 interface IConfirmationOrFeedback {
   personId: string;
@@ -39,31 +38,23 @@ function Information({ result }: { result: IPerson | null }) {
     "results/",
   );
 
-  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string>("");
+  const [fullName, setFullName] = useState<string>("");
+  const [personId, setPersonId] = useState<string>("");
 
-  useEffect(() => {
-    if (!result) {
-      setIsVisible(false);
-      setIsDialogOpen(false);
-      setFeedback("");
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, INFORMATION_TIMEOUT);
-
-    return () => clearTimeout(timer);
-  }, [result]);
+  const resetForm = () => {
+    setFeedback("");
+    setFullName("");
+    setPersonId("");
+  };
 
   const handleSubmitFeedback = async () => {
-    if (!result || feedback.trim() === "") return;
+    if (feedback.trim() === "") return;
 
     const feedbackData: IConfirmationOrFeedback = {
-      personId: result.personId || "",
-      personName: result.name || "",
+      personId: result?.personId || personId,
+      personName: result?.name || fullName,
       feedback: feedback,
     };
 
@@ -71,8 +62,7 @@ function Information({ result }: { result: IPerson | null }) {
       params: feedbackData,
       onSuccess: () => {
         setIsDialogOpen(false);
-        setIsVisible(false);
-        setFeedback("");
+        resetForm();
 
         showNotification(t("information.thankYouFeedback"), "success");
       },
@@ -89,13 +79,23 @@ function Information({ result }: { result: IPerson | null }) {
 
   const handleCancelDialog = () => {
     setIsDialogOpen(false);
-    setFeedback("");
-    setIsVisible(false);
+    resetForm();
   };
 
   const handleWantToBeFound = () => {
     setIsDialogOpen(true);
   };
+
+  useEffect(() => {
+    if (!result) {
+      setIsDialogOpen(false);
+      resetForm();
+      return;
+    }
+  }, [result]);
+
+  const isValidated =
+    !feedback.trim() || (!result && (!fullName.trim() || !personId.trim()));
 
   return (
     <>
@@ -104,9 +104,9 @@ function Information({ result }: { result: IPerson | null }) {
           "fixed z-50 top-0 lg:top-[initial] left-1/2 lg:left-[initial] lg:bottom-4 lg:right-0 flex justify-center -translate-x-1/2 transition-all duration-500",
           {
             "-translate-y-full lg:translate-y-0 lg:translate-x-full":
-              isDialogOpen || isNavigating || !isVisible,
+              isDialogOpen || isNavigating,
             "translate-y-4 lg:translate-y-0 lg:-translate-x-4":
-              isVisible && !isNavigating && !isDialogOpen,
+              !isNavigating && !isDialogOpen,
           },
         )}
       >
@@ -134,6 +134,24 @@ function Information({ result }: { result: IPerson | null }) {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
+            {!result && (
+              <>
+                <Input
+                  placeholder={t("information.fullNamePlaceholder")}
+                  value={fullName}
+                  type="text"
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="rounded-2xl h-auto px-4 py-2 border-2 border-[#41424F]/80! bg-[#010101]/40 text-white placeholder:text-[#5B5D6F] resize-none outline-none"
+                />
+                <Input
+                  placeholder={t("information.personIdPlaceholder")}
+                  value={personId}
+                  type="number"
+                  onChange={(e) => setPersonId(e.target.value)}
+                  className="rounded-2xl px-4 py-2 h-auto border-2 border-[#41424F]/80! bg-[#010101]/40 text-white placeholder:text-[#5B5D6F] resize-none outline-none"
+                />
+              </>
+            )}
             <Textarea
               placeholder={t("information.feedbackPlaceholder")}
               value={feedback}
@@ -153,7 +171,7 @@ function Information({ result }: { result: IPerson | null }) {
             <Button
               type="button"
               onClick={handleSubmitFeedback}
-              disabled={!feedback.trim()}
+              disabled={isValidated || isSending}
               className="rounded-full"
             >
               {isSending ? (
