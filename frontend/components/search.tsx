@@ -151,7 +151,7 @@ export function Search({
             </ItemActions>
           </Item>
 
-          <p className="text-xs text-white text-center">
+          <p className="text-xs text-white text-center max-w-sm mx-auto">
             {t("search.disclaimer")}
           </p>
         </div>

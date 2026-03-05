@@ -17,7 +17,7 @@
       "fullNamePlaceholder": "Enter Full Name",
       "identityNumberPlaceholder": "Enter Staff ID",
       "reset": "Search Again",
-      "disclaimer": "The visual and location data on the aircraft model are provided by AI; please share feedback in case of any errors or omissions."
+      "disclaimer": "If there are any errors or missing information in the visual or location data on the aircraft model, we kindly request your feedback."
     },
     "welcome": {
       "subtitle": "To Many Journeys Together",
@@ -81,7 +81,7 @@
       "fullNamePlaceholder": "Ad Soyad Giriniz",
       "identityNumberPlaceholder": "Sicil Numarası Giriniz",
       "reset": "Tekrar Ara",
-      "disclaimer": "Uçak modeli üzerindeki görsel ve konum verileri yapay zekâ tarafından sağlanmaktadır; hata veya eksiklik durumunda geri bildirim rica ederiz."
+      "disclaimer": "Uçak modeli üzerindeki görsel ve konum verilerinin hata ve eksikliği durumunda geri bildirim rica ederiz."
     },
     "welcome": {
       "subtitle": "Birlikte Nice Yolculuklara",
