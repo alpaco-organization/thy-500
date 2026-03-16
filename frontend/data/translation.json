@@ -16,6 +16,7 @@
       "identityNumber": "Staff ID",
       "fullNamePlaceholder": "Enter Full Name",
       "identityNumberPlaceholder": "Enter Staff ID",
+      "identityNumberTooltip": "Please enter staff IDs with a leading zero.",
       "reset": "Search Again",
       "disclaimer": "If there are any errors or missing information in the visual or location data on the aircraft model, we kindly request your feedback."
     },
@@ -80,6 +81,7 @@
       "identityNumber": "Sicil Numarası",
       "fullNamePlaceholder": "Ad Soyad Giriniz",
       "identityNumberPlaceholder": "Sicil Numarası Giriniz",
+      "identityNumberTooltip": "Sicil numaralarını başında 0 olacak şekilde giriniz.",
       "reset": "Tekrar Ara",
       "disclaimer": "Uçak modeli üzerindeki görsel ve konum verilerinin hata ve eksikliği durumunda geri bildirim rica ederiz."
     },
