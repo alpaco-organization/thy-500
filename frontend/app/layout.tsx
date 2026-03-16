@@ -1,5 +1,6 @@
 import { LanguageProvider } from "@/contexts/language-context";
 import { NavigationProvider } from "@/contexts/navigation-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Metadata } from "next";
 import { Red_Hat_Display } from "next/font/google";
 import "./globals.css";
@@ -19,9 +20,9 @@ export const metadata: Metadata = {
     icon: "/thy-logo.png",
   },
   viewport: {
-    width: 'device-width',
+    width: "device-width",
     initialScale: 1,
-    interactiveWidget: 'resizes-content',
+    interactiveWidget: "resizes-content",
   },
 };
 
@@ -35,7 +36,9 @@ export default function RootLayout({
       <body className={redHat.variable}>
         <NotificationProvider>
           <LanguageProvider>
-            <NavigationProvider>{children}</NavigationProvider>
+            <TooltipProvider>
+              <NavigationProvider>{children}</NavigationProvider>
+            </TooltipProvider>
           </LanguageProvider>
         </NotificationProvider>
       </body>

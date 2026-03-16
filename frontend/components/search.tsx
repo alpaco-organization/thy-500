@@ -6,8 +6,13 @@ import { Item, ItemActions, ItemContent } from "@/components/ui/item";
 import { useLanguage } from "@/contexts/language-context";
 import { useNavigation } from "@/contexts/navigation-context";
 import clsx from "clsx";
-import { Loader2, Search as SearchIcon, X } from "lucide-react";
+import { Info, Loader2, Search as SearchIcon, X } from "lucide-react";
 import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useState } from "react";
 
 type SearchType = "identity" | "fullName";
@@ -101,6 +106,21 @@ export function Search({
                 className="inline-block size-4"
               />
               {t("search.identityNumber")}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="inline-flex cursor-pointer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Info className="size-3 text-white" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-white">
+                    {t("search.identityNumberTooltip")}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
             </Button>
           </div>
 
@@ -151,7 +171,7 @@ export function Search({
             </ItemActions>
           </Item>
 
-          <p className="text-xs text-white text-center">
+          <p className="text-xs text-white text-center max-w-sm mx-auto">
             {t("search.disclaimer")}
           </p>
         </div>
